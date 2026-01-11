@@ -22,7 +22,7 @@ jobs:
 
       - uses: ./.github/actions/setup-kamal
 
-      - uses: ./.github/actions/backup-setup
+      - uses: ./.github/actions/setup-gcloud
 
       - name: Capture Current Version
         id: version

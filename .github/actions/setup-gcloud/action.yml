@@ -1,5 +1,5 @@
-name: "Backup Setup"
-description: "Setup Google Cloud Storage authentication and capture current version"
+name: "Setup gcloud"
+description: "Setup Google Cloud Storage authentication"
 
 runs:
   using: "composite"

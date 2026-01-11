@@ -25,7 +25,22 @@ jobs:
 
       - uses: ./.github/actions/setup-kamal
 
-      - uses: ./.github/actions/backup-setup
+      - uses: ./.github/actions/setup-gcloud
+
+      - name: Capture Current Version
+        id: version
+        run: |
+          OUTPUT=$(kamal app version -c fizzy/config/deploy.yml)
+
+          # Extract the SHA (assuming the last line containing a 7-char hash is the version)
+          SHA=$(echo "$OUTPUT" | grep -oE '[0-9a-f]{7}' | tail -n 1)
+
+          if [ -z "$SHA" ]; then
+            echo "::warning::Could not detect running version. Will attempt default start."
+          else
+            echo "Detected version: $SHA"
+            echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          fi
 
       - run: kamal app stop -c fizzy/config/deploy.yml
 
@@ -58,8 +73,8 @@ jobs:
       - name: Start Application
         if: always()
         run: |
-          SERVICE="${{ inputs.service }}"
-          VERSION="${{ steps.backup-setup.outputs.version }}"
+          SERVICE="fizzy"
+          VERSION="${{ steps.version.outputs.sha }}"
 
           if [ -n "$VERSION" ]; then
             echo "Restarting specific version: $VERSION"
