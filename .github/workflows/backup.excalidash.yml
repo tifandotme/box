@@ -1,4 +1,4 @@
-name: Backup ExcaliDash to GCS
+name: Backup ExcaliDash
 
 on:
   schedule:

@@ -1,4 +1,4 @@
-name: Restore Fizzy from GCS
+name: Restore Fizzy
 
 on:
   workflow_dispatch:

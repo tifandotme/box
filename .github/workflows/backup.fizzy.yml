@@ -1,4 +1,4 @@
-name: Backup Fizzy to GCS
+name: Backup Fizzy
 
 on:
   schedule:
