@@ -1,10 +1,15 @@
 name: "Backup Setup"
-description: "Setup Google Cloud Storage authentication and capture current SHA"
+description: "Setup Google Cloud Storage authentication and capture current version"
+
+inputs:
+  service:
+    description: "Service to capture version from"
+    required: true
 
 outputs:
-  sha:
-    description: "The current SHA"
-    value: ${{ steps.version.outputs.sha }}
+  version:
+    description: "The current version (SHA or tag)"
+    value: ${{ steps.version.outputs.version }}
 
 runs:
   using: "composite"
@@ -28,16 +33,15 @@ runs:
     - name: Capture Current Version
       id: version
       run: |
-        # Get the running version so we can restart the exact same container
-        OUTPUT=$(kamal app version -c fizzy/config/deploy.yml)
+        SERVICE="${{ inputs.service }}"
+        OUTPUT=$(kamal app version -c $SERVICE/config/deploy.yml)
 
-        # Extract the SHA (assuming the last line containing a 7-char hash is the version)
-        SHA=$(echo "$OUTPUT" | grep -oE '[0-9a-f]{7}' | tail -n 1)
+        VERSION=$(echo "$OUTPUT" | tail -n 2 | xargs)
 
-        if [ -z "$SHA" ]; then
+        if [ -z "$VERSION" ]; then
           echo "::warning::Could not detect running version. Will attempt default start."
         else
-          echo "Detected version: $SHA"
-          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "Detected version: $VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
         fi
       shell: bash
