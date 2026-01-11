@@ -58,7 +58,8 @@ jobs:
 
           echo "Downloading data from server..."
           rsync -avz -e "ssh" \
-            -x ".*\.sqlite3-shm$|.*\.sqlite3-wal$" \
+            --exclude=".*\.sqlite3-shm$" \
+            --exclude=".*\.sqlite3-wal$" \
             eddies@box.javanese-pound.ts.net:/home/eddies/$VOLUME_NAME/ ./$BACKUP_DIR
 
           echo "Uploading to GCS..."
