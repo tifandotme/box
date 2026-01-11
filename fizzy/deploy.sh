@@ -2,11 +2,11 @@
 
 set -e
 
-if ! git remote | grep -q upstream; then
-  git remote add upstream https://github.com/basecamp/fizzy
+if ! git remote | grep -q fizzy; then
+  git remote add fizzy https://github.com/basecamp/fizzy
 fi
-git fetch upstream --tags
-LATEST_TAG=$(git describe --tags --abbrev=0 upstream/HEAD)
+git fetch fizzy --tags
+LATEST_TAG=$(git describe --tags --abbrev=0 fizzy/HEAD)
 VERSION="$(echo "$LATEST_TAG" | cut -d'@' -f2)"
 
 sed -i '' "s/main/sha-$VERSION/" Dockerfile
