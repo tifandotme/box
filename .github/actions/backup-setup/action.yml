@@ -29,7 +29,7 @@ runs:
       id: version
       run: |
         # Get the running version so we can restart the exact same container
-        OUTPUT=$(kamal app version)
+        OUTPUT=$(kamal app version -c fizzy/config/deploy.yml)
 
         # Extract the SHA (assuming the last line containing a 7-char hash is the version)
         SHA=$(echo "$OUTPUT" | grep -oE '[0-9a-f]{7}' | tail -n 1)
