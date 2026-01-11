@@ -23,9 +23,10 @@ jobs:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
 
-      - uses: ./.github/actions/gcs-setup
+      - uses: ./.github/actions/backup-setup
+        id: backup-setup
 
-      - run: kamal app maintenance --message "Restore in progress"
+      - run: kamal app stop -c fizzy/config/deploy.yml
 
       - name: Perform Restore
         run: |
@@ -48,4 +49,13 @@ jobs:
 
       - name: Start Application
         if: always() # Ensure app restarts even if restore fails
-        run: kamal app live
+        run: |
+          VERSION="${{ steps.backup-setup.outputs.sha }}"
+
+          if [ -n "$VERSION" ]; then
+            echo "Restarting specific version: $VERSION"
+            kamal app start --version="$VERSION" -c fizzy/config/deploy.yml
+          else
+            echo "Restarting default version..."
+            kamal app start -c fizzy/config/deploy.yml
+          fi
