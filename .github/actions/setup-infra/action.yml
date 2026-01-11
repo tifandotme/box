@@ -1,4 +1,4 @@
-name: "Infra Setup"
+name: "Setup Infra"
 description: "Setup infrastructure: dotenvx, Tailscale, SSH"
 
 inputs:
