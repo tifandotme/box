@@ -26,7 +26,7 @@ resource "google_storage_bucket" "fizzy_backups" {
 
   lifecycle_rule {
     condition {
-      age = 30
+      age = 3 # TODO change back to 30
     }
     action {
       type = "Delete"
