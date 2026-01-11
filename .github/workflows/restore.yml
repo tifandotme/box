@@ -1,0 +1,51 @@
+name: Restore from GCS
+
+on:
+  workflow_dispatch:
+    inputs:
+      folder_name:
+        description: "The folder name in the GCS bucket to restore from (e.g., 20231001-190000)"
+        required: true
+        type: string
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DOTENV_PRIVATE_KEY: ${{ secrets.DOTENV_PRIVATE_KEY }}
+
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - uses: ./.github/actions/infra-setup
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+
+      - uses: ./.github/actions/gcs-setup
+
+      - run: kamal app maintenance --message "Restore in progress"
+
+      - name: Perform Restore
+        run: |
+          GCS_BUCKET="gs://$(dotenvx get TF_VAR_fizzy_bucket_name --env-file terraform/.env)"
+          FOLDER_NAME="${{ inputs.folder_name }}"
+          RESTORE_DIR="fizzy-storage-restore"
+
+          echo "=== Starting Restore from: $GCS_BUCKET/$FOLDER_NAME ==="
+
+          echo "Downloading data from GCS..."
+          mkdir -p ./$RESTORE_DIR
+          gsutil -m rsync -r "$GCS_BUCKET/$FOLDER_NAME" ./$RESTORE_DIR
+
+          ssh eddies@box.javanese-pound.ts.net "rm -rf /home/eddies/fizzy-storage"
+
+          echo "Uploading to server..."
+          rsync -avz -e "ssh" ./$RESTORE_DIR/ eddies@box.javanese-pound.ts.net:/home/eddies
+
+          echo "✓ Restore completed from: $GCS_BUCKET/$FOLDER_NAME"
+
+      - name: Start Application
+        if: always() # Ensure app restarts even if restore fails
+        run: kamal app live

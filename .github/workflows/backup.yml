@@ -1,0 +1,47 @@
+name: Backup to GCS
+
+on:
+  # schedule:
+  #   - cron: "0 19 * * *" # Daily at 2AM Jakarta (19:00 UTC)
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DOTENV_PRIVATE_KEY: ${{ secrets.DOTENV_PRIVATE_KEY }}
+
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - uses: ./.github/actions/infra-setup
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+
+      - uses: ./.github/actions/gcs-setup
+
+      - run: kamal app maintenance --message "Backup in progress"
+
+      - name: Perform Backup
+        run: |
+          GCS_BUCKET="gs://$(dotenvx get TF_VAR_fizzy_bucket_name --env-file terraform/.env)"
+          DATE=$(date +%Y%m%d-%H%M%S)
+          BACKUP_DIR="fizzy-storage-backup"
+
+          echo "=== Starting Backup: $DATE ==="
+
+          echo "Downloading data from server..."
+          rsync -avz -e "ssh" eddies@box.javanese-pound.ts.net:/home/eddies/fizzy-storage ./$BACKUP_DIR
+
+          echo "Uploading to GCS..."
+          gsutil -m rsync -r -d \
+            -x ".*\.sqlite3-shm$|.*\.sqlite3-wal$" \
+            ./$BACKUP_DIR "$GCS_BUCKET/$DATE"
+
+          echo "✓ Backup completed: $GCS_BUCKET/$DATE"
+
+      - name: Start Application
+        if: always() # Ensure app restarts even if backup fails
+        run: kamal app live
