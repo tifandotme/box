@@ -23,6 +23,8 @@ jobs:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
 
+      - uses: ./.github/actions/setup-kamal
+
       - uses: ./.github/actions/backup-setup
 
       - run: kamal app stop -c fizzy/config/deploy.yml

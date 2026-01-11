@@ -1,5 +1,5 @@
 name: "Infra Setup"
-description: "Setup infrastructure: dotenvx, Tailscale, SSH, Ruby, and Kamal"
+description: "Setup infrastructure: dotenvx, Tailscale, SSH"
 
 inputs:
   oauth-client-id:
@@ -28,12 +28,4 @@ runs:
         mkdir -p ~/.ssh
         ssh-keyscan box.javanese-pound.ts.net >> ~/.ssh/known_hosts 2>/dev/null || true
         chmod 700 ~/.ssh
-      shell: bash
-
-    - uses: ruby/setup-ruby@675dd7ba1b06c8786a1480d89c384f5620a42647 # v1.281.0
-      with:
-        ruby-version: 4
-        bundler-cache: true
-
-    - run: gem install kamal --no-document
       shell: bash
