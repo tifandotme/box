@@ -7,7 +7,7 @@ on:
 
 jobs:
   backup:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
       DOTENV_PRIVATE_KEY: ${{ secrets.DOTENV_PRIVATE_KEY }}
