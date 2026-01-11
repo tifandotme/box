@@ -59,6 +59,13 @@ aliases:
   backend-shell: accessory exec backend --interactive --reuse "sh"
   backend-logs: accessory logs backend -f
 
+registry:
+  server: ghcr.io
+  username:
+    - KAMAL_REGISTRY_USERNAME
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
 builder:
   arch: amd64
   remote: ssh://eddies@box.javanese-pound.ts.net
