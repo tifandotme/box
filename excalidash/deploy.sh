@@ -9,4 +9,5 @@ git fetch excalidash --tags
 LATEST_TAG=$(git describe --tags --abbrev=0 excalidash/HEAD)
 VERSION="${LATEST_TAG#v}"
 
+kamal accessory reboot backend
 kamal deploy --version="$VERSION" --skip-push
