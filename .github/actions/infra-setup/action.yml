@@ -1,0 +1,38 @@
+name: "Infra Setup"
+description: "Setup infrastructure: dotenvx, Tailscale, SSH, Ruby, and Kamal"
+
+inputs:
+  oauth-client-id:
+    description: "Tailscale OAuth client ID"
+    required: true
+  oauth-secret:
+    description: "Tailscale OAuth secret"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - run: curl -sfS https://dotenvx.sh/install.sh | sh
+      shell: bash
+
+    - uses: tailscale/github-action@53acf823325fe9ca47f4cdaa951f90b4b0de5bb9 # v4.1.1
+      with:
+        oauth-client-id: ${{ inputs.oauth-client-id }}
+        oauth-secret: ${{ inputs.oauth-secret }}
+        tags: tag:ci
+        version: latest
+        ping: box.javanese-pound.ts.net
+
+    - name: Setup SSH
+      run: |
+        mkdir -p ~/.ssh
+        ssh-keyscan box.javanese-pound.ts.net >> ~/.ssh/known_hosts 2>/dev/null || true
+        chmod 700 ~/.ssh
+      shell: bash
+
+    - uses: ruby/setup-ruby@675dd7ba1b06c8786a1480d89c384f5620a42647 # v1.281.0
+      with:
+        bundler-cache: true
+
+    - run: gem install kamal --no-document
+      shell: bash

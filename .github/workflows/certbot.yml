@@ -22,21 +22,10 @@ jobs:
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
-      - run: curl -sfS https://dotenvx.sh/install.sh | sh
-
-      - uses: tailscale/github-action@53acf823325fe9ca47f4cdaa951f90b4b0de5bb9 # v4.1.1
+      - uses: ./.github/actions/infra-setup
         with:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-          tags: tag:ci
-          version: latest
-          ping: box.javanese-pound.ts.net
-
-      - name: Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan box.javanese-pound.ts.net >> ~/.ssh/known_hosts 2>/dev/null || true
-          chmod 700 ~/.ssh
 
       - name: Generate new certificate
         run: |
