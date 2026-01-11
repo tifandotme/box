@@ -4,11 +4,23 @@ on:
   schedule:
     - cron: "0 19 * * *" # Daily at 2AM Jakarta (19:00 UTC)
   workflow_dispatch:
+    inputs:
+      service:
+        description: "Service to backup"
+        required: true
+        default: "fizzy"
+        type: choice
+        options:
+          - fizzy
+          - excalidash
 
 jobs:
   backup:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    strategy:
+      matrix:
+        service: ${{ fromJson(github.event_name == 'schedule' && '["fizzy", "excalidash"]' || format('["{0}"]', inputs.service)) }}
     env:
       DOTENV_PRIVATE_KEY: ${{ secrets.DOTENV_PRIVATE_KEY }}
 
@@ -22,19 +34,28 @@ jobs:
 
       - uses: ./.github/actions/backup-setup
         id: backup-setup
+        with:
+          service: ${{ matrix.service }}
 
-      - run: kamal app stop -c fizzy/config/deploy.yml
+      - run: kamal app stop -c ${{ matrix.service }}/config/deploy.yml
 
       - name: Perform Backup
         run: |
-          GCS_BUCKET="gs://$(dotenvx get TF_VAR_fizzy_bucket_name --env-file terraform/.env)"
+          SERVICE="${{ matrix.service }}"
+          VOLUME_NAME="${SERVICE}-storage"
+          BUCKET_VAR="TF_VAR_${SERVICE}_bucket_name"
+
+          GCS_BUCKET="gs://$(dotenvx get "$BUCKET_VAR" --env-file terraform/.env)"
           DATE=$(date +%Y%m%d-%H%M%S)
-          BACKUP_DIR="fizzy-storage-backup"
+          BACKUP_DIR="${VOLUME_NAME}-backup"
 
           echo "=== Starting Backup: $DATE ==="
+          echo "Service: $SERVICE"
+          echo "Volume: $VOLUME_NAME"
+          echo "Bucket: $GCS_BUCKET"
 
           echo "Downloading data from server..."
-          rsync -avz -e "ssh" eddies@box.javanese-pound.ts.net:/home/eddies/fizzy-storage/ ./$BACKUP_DIR
+          rsync -avz -e "ssh" eddies@box.javanese-pound.ts.net:/home/eddies/$VOLUME_NAME/ ./$BACKUP_DIR
 
           echo "Uploading to GCS..."
           gsutil -m rsync -r -d \
@@ -44,14 +65,15 @@ jobs:
           echo "✓ Backup completed: $GCS_BUCKET/$DATE"
 
       - name: Start Application
-        if: always() # Ensure app restarts even if restore fails
+        if: always()
         run: |
-          VERSION="${{ steps.backup-setup.outputs.sha }}"
+          SERVICE="${{ matrix.service }}"
+          VERSION="${{ steps.backup-setup.outputs.version }}"
 
           if [ -n "$VERSION" ]; then
             echo "Restarting specific version: $VERSION"
-            kamal app start --version="$VERSION" -c fizzy/config/deploy.yml
+            kamal app start --version="$VERSION" -c $SERVICE/config/deploy.yml
           else
             echo "Restarting default version..."
-            kamal app start -c fizzy/config/deploy.yml
+            kamal app start -c $SERVICE/config/deploy.yml
           fi
