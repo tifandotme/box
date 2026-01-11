@@ -1,0 +1,68 @@
+name: Generate SSL
+
+on:
+  workflow_dispatch:
+    inputs:
+      service:
+        description: "Service to generate certificate for"
+        required: true
+        default: "fizzy"
+        type: choice
+        options:
+          - fizzy
+          - excalidash
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      DOTENV_PRIVATE_KEY: ${{ secrets.DOTENV_PRIVATE_KEY }}
+
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - run: curl -sfS https://dotenvx.sh/install.sh | sh
+
+      - uses: tailscale/github-action@53acf823325fe9ca47f4cdaa951f90b4b0de5bb9 # v4.1.1
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+          version: latest
+          ping: box.javanese-pound.ts.net
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan box.javanese-pound.ts.net >> ~/.ssh/known_hosts 2>/dev/null || true
+          chmod 700 ~/.ssh
+
+      - name: Generate new certificate
+        run: |
+          mkdir -p ./certbot
+          cat <<EOF > ./certbot/cloudflare.ini
+          dns_cloudflare_api_token = "$(dotenvx get CLOUDFLARE_API_TOKEN)"
+          EOF
+          chmod 600 ./certbot/cloudflare.ini
+
+          docker run --rm \
+            -v "$(pwd)"/letsencrypt:/etc/letsencrypt \
+            -v "$(pwd)"/letsencrypt-logs:/var/log/letsencrypt \
+            -v "$(pwd)"/certbot/cloudflare.ini:/root/.config/certbot/cloudflare.ini \
+            certbot/dns-cloudflare \
+            certonly \
+            --dns-cloudflare \
+            --dns-cloudflare-credentials /root/.config/certbot/cloudflare.ini \
+            --dns-cloudflare-propagation-seconds 20 \
+            --non-interactive \
+            --agree-tos \
+            --email tifan@proton.me \
+            -d ${{ inputs.service }}.tifan.me
+
+          sudo chown -R "$USER" letsencrypt
+
+      - name: Copy certificates to server
+        run: |
+          scp ./letsencrypt/live/${{ inputs.service }}.tifan.me/fullchain.pem eddies@box.javanese-pound.ts.net:/home/eddies/.kamal/proxy/apps-config/${{ inputs.service }}/tls/web/cert.pem
+          scp ./letsencrypt/live/${{ inputs.service }}.tifan.me/privkey.pem eddies@box.javanese-pound.ts.net:/home/eddies/.kamal/proxy/apps-config/${{ inputs.service }}/tls/web/key.pem
