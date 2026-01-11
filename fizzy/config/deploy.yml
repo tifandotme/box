@@ -47,7 +47,6 @@ registry:
 aliases:
   shell: app exec --interactive --reuse "bash"
   logs: app logs -f # follow
-  backup-logs: server exec "cat $HOME/.logs/fizzy-backup.log"
   lzd: server exec --interactive "TERM=xterm-256color /home/linuxbrew/.linuxbrew/bin/lazydocker"
   btm: server exec --interactive "TERM=xterm-256color /home/linuxbrew/.linuxbrew/bin/btm -g --process_memory_as_value"
   console: app exec --interactive --reuse "bin/rails console"
