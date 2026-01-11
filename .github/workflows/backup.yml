@@ -33,7 +33,7 @@ jobs:
           echo "=== Starting Backup: $DATE ==="
 
           echo "Downloading data from server..."
-          rsync -avz -e "ssh" eddies@box.javanese-pound.ts.net:/home/eddies/fizzy-storage ./$BACKUP_DIR
+          rsync -avz -e "ssh" eddies@box.javanese-pound.ts.net:/home/eddies/fizzy-storage/ ./$BACKUP_DIR
 
           echo "Uploading to GCS..."
           gsutil -m rsync -r -d \

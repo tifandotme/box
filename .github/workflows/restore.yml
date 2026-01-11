@@ -39,10 +39,10 @@ jobs:
           mkdir -p ./$RESTORE_DIR
           gsutil -m rsync -r "$GCS_BUCKET/$FOLDER_NAME" ./$RESTORE_DIR
 
-          ssh eddies@box.javanese-pound.ts.net "rm -rf /home/eddies/fizzy-storage"
+          ssh eddies@box.javanese-pound.ts.net "rm -rf /home/eddies/fizzy-storage && mkdir -p /home/eddies/fizzy-storage"
 
           echo "Uploading to server..."
-          rsync -avz -e "ssh" ./$RESTORE_DIR/ eddies@box.javanese-pound.ts.net:/home/eddies
+          rsync -avz -e "ssh" ./$RESTORE_DIR/ eddies@box.javanese-pound.ts.net:/home/eddies/fizzy-storage
 
           echo "✓ Restore completed from: $GCS_BUCKET/$FOLDER_NAME"
 
