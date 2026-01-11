@@ -9,3 +9,7 @@ variable "region" {
 variable "fizzy_bucket_name" {
   type = string
 }
+
+variable "excalidash_bucket_name" {
+  type = string
+}
