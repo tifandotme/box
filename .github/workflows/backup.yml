@@ -50,8 +50,8 @@ jobs:
 
           if [ -n "$VERSION" ]; then
             echo "Restarting specific version: $VERSION"
-            kamal app start --version="$VERSION"
+            kamal app start --version="$VERSION" -c fizzy/config/deploy.yml
           else
             echo "Restarting default version..."
-            kamal app start
+            kamal app start -c fizzy/config/deploy.yml
           fi
