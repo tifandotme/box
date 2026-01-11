@@ -3,6 +3,14 @@ name: Restore from GCS
 on:
   workflow_dispatch:
     inputs:
+      service:
+        description: "Service to restore"
+        required: true
+        default: "fizzy"
+        type: choice
+        options:
+          - fizzy
+          - excalidash
       folder_name:
         description: "The folder name in the GCS bucket to restore from (e.g., 20231001-190000)"
         required: true
@@ -25,37 +33,47 @@ jobs:
 
       - uses: ./.github/actions/backup-setup
         id: backup-setup
+        with:
+          service: ${{ inputs.service }}
 
-      - run: kamal app stop -c fizzy/config/deploy.yml
+      - run: kamal app stop -c ${{ inputs.service }}/config/deploy.yml
 
       - name: Perform Restore
         run: |
-          GCS_BUCKET="gs://$(dotenvx get TF_VAR_fizzy_bucket_name --env-file terraform/.env)"
-          FOLDER_NAME="${{ inputs.folder_name }}"
-          RESTORE_DIR="fizzy-storage-restore"
+          SERVICE="${{ inputs.service }}"
+          VOLUME_NAME="${SERVICE}-storage"
+          BUCKET_VAR="TF_VAR_${SERVICE}_bucket_name"
 
-          echo "=== Starting Restore from: $GCS_BUCKET/$FOLDER_NAME ==="
+          GCS_BUCKET="gs://$(dotenvx get "$BUCKET_VAR" --env-file terraform/.env)"
+          FOLDER_NAME="${{ inputs.folder_name }}"
+          RESTORE_DIR="${VOLUME_NAME}-restore"
+
+          echo "=== Starting Restore of $SERVICE from: $GCS_BUCKET/$FOLDER_NAME ==="
+          echo "Service: $SERVICE"
+          echo "Volume: $VOLUME_NAME"
+          echo "Bucket: $GCS_BUCKET"
 
           echo "Downloading data from GCS..."
           mkdir -p ./$RESTORE_DIR
           gsutil -m rsync -r "$GCS_BUCKET/$FOLDER_NAME" ./$RESTORE_DIR
 
-          ssh eddies@box.javanese-pound.ts.net "rm -rf /home/eddies/fizzy-storage && mkdir -p /home/eddies/fizzy-storage"
+          ssh eddies@box.javanese-pound.ts.net "rm -rf /home/eddies/$VOLUME_NAME && mkdir -p /home/eddies/$VOLUME_NAME"
 
           echo "Uploading to server..."
-          rsync -avz -e "ssh" ./$RESTORE_DIR/ eddies@box.javanese-pound.ts.net:/home/eddies/fizzy-storage
+          rsync -avz -e "ssh" ./$RESTORE_DIR/ eddies@box.javanese-pound.ts.net:/home/eddies/$VOLUME_NAME
 
           echo "✓ Restore completed from: $GCS_BUCKET/$FOLDER_NAME"
 
       - name: Start Application
-        if: always() # Ensure app restarts even if restore fails
+        if: always()
         run: |
-          VERSION="${{ steps.backup-setup.outputs.sha }}"
+          SERVICE="${{ inputs.service }}"
+          VERSION="${{ steps.backup-setup.outputs.version }}"
 
           if [ -n "$VERSION" ]; then
             echo "Restarting specific version: $VERSION"
-            kamal app start --version="$VERSION" -c fizzy/config/deploy.yml
+            kamal app start --version="$VERSION" -c $SERVICE/config/deploy.yml
           else
             echo "Restarting default version..."
-            kamal app start -c fizzy/config/deploy.yml
+            kamal app start -c $SERVICE/config/deploy.yml
           fi
