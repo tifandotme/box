@@ -27,13 +27,14 @@ jobs:
         run: |
           OUTPUT=$(kamal app version -c fizzy/config/deploy.yml)
 
-          VERSION=$(echo "$OUTPUT" | tail -n 2 | xargs)
+          # Extract the SHA (assuming the last line containing a 7-char hash is the version)
+          SHA=$(echo "$OUTPUT" | grep -oE '[0-9a-f]{7}' | tail -n 1)
 
-          if [ -z "$VERSION" ]; then
+          if [ -z "$SHA" ]; then
             echo "::warning::Could not detect running version. Will attempt default start."
           else
-            echo "Detected version: $VERSION"
-            echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+            echo "Detected version: $SHA"
+            echo "sha=$SHA" >> "$GITHUB_OUTPUT"
           fi
 
       - run: kamal app stop -c fizzy/config/deploy.yml
@@ -67,7 +68,7 @@ jobs:
         if: always()
         run: |
           SERVICE="fizzy"
-          VERSION="${{ steps.version.outputs.version }}"
+          VERSION="${{ steps.version.outputs.sha }}"
 
           if [ -n "$VERSION" ]; then
             echo "Restarting specific version: $VERSION"
