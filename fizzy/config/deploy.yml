@@ -1,0 +1,70 @@
+service: fizzy
+image: tifandotme/fizzy
+
+servers:
+  web:
+    - box.javanese-pound.ts.net
+
+ssh:
+  user: eddies
+
+sshkit:
+  max_concurrent_starts: 1
+  dns_retries: 5
+  pool_idle_timeout: 300
+
+proxy:
+  # using custom cert (see .github/workflows/deploy.yml)
+  # because Kamal's `ssl: true` feature won't work when the server is "private"
+  # p.s. we need to renew it every 3 months
+  ssl:
+    certificate_pem: SSL_CERTIFICATE_PEM
+    private_key_pem: SSL_PRIVATE_KEY_PEM
+  host: fizzy.tifan.me
+
+env:
+  secret:
+    - SECRET_KEY_BASE
+    - VAPID_PUBLIC_KEY
+    - VAPID_PRIVATE_KEY
+    - SMTP_USERNAME
+    - SMTP_PASSWORD
+  clear:
+    BASE_URL: https://fizzy.tifan.me # The public URL of your Fizzy instance
+    MAILER_FROM_ADDRESS: fizzy@mail.tifan.me # The email "from" address that Fizzy sends email from
+    SMTP_ADDRESS: smtp.mailgun.org # The SMTP server you'll use to send email
+    MULTI_TENANT: false # Set to true to allow multiple accounts to sign up
+    SOLID_QUEUE_IN_PUMA: true # Run background jobs in the app container
+    WEB_CONCURRENCY: 1 # Use single-worker mode to reduce memory overhead
+
+registry:
+  server: ghcr.io
+  username:
+    - KAMAL_REGISTRY_USERNAME
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+aliases:
+  shell: app exec --interactive --reuse "bash"
+  logs: app logs -f # follow
+  backup: server exec "$HOME/backup-fizzy.sh"
+  backup-logs: server exec "cat $HOME/.logs/fizzy-backup.log"
+  lzd: server exec --interactive "TERM=xterm-256color /home/linuxbrew/.linuxbrew/bin/lazydocker"
+  btm: server exec --interactive "TERM=xterm-256color /home/linuxbrew/.linuxbrew/bin/btm -g --process_memory_as_value"
+  console: app exec --interactive --reuse "bin/rails console"
+  dbc: app exec --interactive --reuse "bin/rails dbconsole --include-password"
+
+# Use a persistent storage volume for sqlite database files and local Active Storage files.
+# Recommended to change this to a mounted volume path that is backed up off server.
+# TODO backup to GCS
+volumes:
+  - /home/eddies/fizzy-storage:/rails/storage
+
+# Bridge fingerprinted assets, like JS and CSS, between versions to avoid
+# hitting 404 on in-flight requests. Combines all files from new and old
+# version inside the asset_path.
+asset_path: /rails/public/assets
+
+builder:
+  arch: amd64
+  remote: ssh://eddies@box.javanese-pound.ts.net

@@ -1,0 +1,30 @@
+[tasks.queue-health]
+description = "Check Solid Queue job health (jobs count, workers alive, oldest job age)"
+run = """
+kamal console << 'EOF'
+jobs = SolidQueue::Job.count
+workers = SolidQueue::Process.where(kind: 'Worker').count
+oldest = SolidQueue::Job.order(:created_at).first
+age = oldest ? ((Time.now.utc - oldest.created_at) / 86400).to_i : 0
+puts "Jobs: #{jobs} | Workers: #{workers} | Oldest: #{age}d"
+pending = SolidQueue::Job.where(finished_at: nil)
+completed = SolidQueue::Job.where.not(finished_at: nil)
+puts "Pending: #{pending.count} (e.g., #{pending.limit(3).pluck(:class_name).join(', ')})"
+puts "Completed: #{completed.count} (e.g., #{completed.limit(3).pluck(:class_name).join(', ')})"
+exit
+EOF
+"""
+
+[tasks.queue-details]
+description = "Check Solid Queue job details (list first 5 jobs)"
+run = """
+kamal console << 'EOF'
+puts "First 5 jobs:"
+SolidQueue::Job.order(:created_at).limit(5).each do |job|
+  age_days = ((Time.now.utc - job.created_at) / 86400).to_i
+  status = job.finished_at ? 'completed' : 'pending'
+  puts "#{job.id}: #{job.class_name} (#{job.queue_name}) - #{status} - #{age_days}d old"
+end
+exit
+EOF
+"""

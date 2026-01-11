@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -e
+
+echo "Setting up deployment environment..."
+
+ssh eddies@box.javanese-pound.ts.net bash <<'EOF'
+  set -e
+
+  if ! groups | grep -q docker; then
+    echo "Adding user to docker group..."
+    sudo usermod -aG docker "$USER"
+    sudo systemctl restart docker || sudo service docker restart || true
+  fi
+
+  echo "Creating fizzy-storage directory..."
+  mkdir -p "$HOME/fizzy-storage"
+  chmod 777 "$HOME/fizzy-storage"
+  chown "$USER" "$HOME/fizzy-storage"
+EOF
+
+exit 0
