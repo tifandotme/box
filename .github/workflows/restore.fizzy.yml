@@ -1,16 +1,8 @@
-name: Restore from GCS
+name: Restore Fizzy from GCS
 
 on:
   workflow_dispatch:
     inputs:
-      service:
-        description: "Service to restore"
-        required: true
-        default: "fizzy"
-        type: choice
-        options:
-          - fizzy
-          - excalidash
       folder_name:
         description: "The folder name in the GCS bucket to restore from (e.g., 20231001-190000)"
         required: true
@@ -32,15 +24,12 @@ jobs:
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
 
       - uses: ./.github/actions/backup-setup
-        id: backup-setup
-        with:
-          service: ${{ inputs.service }}
 
-      - run: kamal app stop -c ${{ inputs.service }}/config/deploy.yml
+      - run: kamal app stop -c fizzy/config/deploy.yml
 
       - name: Perform Restore
         run: |
-          SERVICE="${{ inputs.service }}"
+          SERVICE="fizzy"
           VOLUME_NAME="${SERVICE}-storage"
           BUCKET_VAR="TF_VAR_${SERVICE}_bucket_name"
 

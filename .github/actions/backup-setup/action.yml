@@ -1,16 +1,6 @@
 name: "Backup Setup"
 description: "Setup Google Cloud Storage authentication and capture current version"
 
-inputs:
-  service:
-    description: "Service to capture version from"
-    required: true
-
-outputs:
-  version:
-    description: "The current version (SHA or tag)"
-    value: ${{ steps.version.outputs.version }}
-
 runs:
   using: "composite"
   steps:
@@ -29,19 +19,3 @@ runs:
         credentials_json: "${{ steps.secrets.outputs.credentials_json }}"
 
     - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
-
-    - name: Capture Current Version
-      id: version
-      run: |
-        SERVICE="${{ inputs.service }}"
-        OUTPUT=$(kamal app version -c $SERVICE/config/deploy.yml)
-
-        VERSION=$(echo "$OUTPUT" | tail -n 2 | xargs)
-
-        if [ -z "$VERSION" ]; then
-          echo "::warning::Could not detect running version. Will attempt default start."
-        else
-          echo "Detected version: $VERSION"
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-        fi
-      shell: bash
