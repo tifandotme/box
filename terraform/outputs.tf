@@ -5,7 +5,7 @@ output "backup_command" {
 
 output "recovery_command" {
   description = "Example command to restore from backup"
-  value       = "gsutil -m cp -r gs://${google_storage_bucket.fizzy_backups.name}/BACKUP_DATE/* /home/eddies/fizzy-storage/"
+  value       = "mkdir -p /home/eddies/fizzy-storage && gsutil -m cp -r gs://${google_storage_bucket.fizzy_backups.name}/BACKUP_DATE/* /home/eddies/fizzy-storage/"
 }
 
 output "base64_encoded_service_account_json" {
