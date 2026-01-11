@@ -14,7 +14,7 @@ sshkit:
   pool_idle_timeout: 300
 
 proxy:
-  # using custom cert (see .github/workflows/deploy.yml)
+  # using custom cert
   # because Kamal's `ssl: true` feature won't work when the server is "private"
   # p.s. we need to renew it every 3 months
   ssl:
@@ -47,22 +47,15 @@ registry:
 aliases:
   shell: app exec --interactive --reuse "bash"
   logs: app logs -f # follow
-  backup: server exec "$HOME/backup-fizzy.sh"
   backup-logs: server exec "cat $HOME/.logs/fizzy-backup.log"
   lzd: server exec --interactive "TERM=xterm-256color /home/linuxbrew/.linuxbrew/bin/lazydocker"
   btm: server exec --interactive "TERM=xterm-256color /home/linuxbrew/.linuxbrew/bin/btm -g --process_memory_as_value"
   console: app exec --interactive --reuse "bin/rails console"
   dbc: app exec --interactive --reuse "bin/rails dbconsole --include-password"
 
-# Use a persistent storage volume for sqlite database files and local Active Storage files.
-# Recommended to change this to a mounted volume path that is backed up off server.
-# TODO backup to GCS
 volumes:
   - /home/eddies/fizzy-storage:/rails/storage
 
-# Bridge fingerprinted assets, like JS and CSS, between versions to avoid
-# hitting 404 on in-flight requests. Combines all files from new and old
-# version inside the asset_path.
 asset_path: /rails/public/assets
 
 builder:
