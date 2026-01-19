@@ -11,6 +11,7 @@ on:
         options:
           - fizzy
           - excalidash
+          - n8n
 
 jobs:
   generate:
