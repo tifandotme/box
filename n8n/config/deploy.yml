@@ -112,6 +112,8 @@ builder:
   arch: amd64
   remote: ssh://eddies@box.javanese-pound.ts.net
   dockerfile: Dockerfile
+  args:
+    N8N_VERSION: <%= ENV.fetch("N8N_VERSION", "latest") %>
 
 aliases:
   shell: app exec --interactive --reuse "sh"
