@@ -25,7 +25,9 @@ proxy:
   healthcheck:
     path: /healthz/readiness
     interval: 30
-    timeout: 10
+    timeout: 15
+    deploy_timeout: 45
+    drain_timeout: 45
 
 env:
   secret:
