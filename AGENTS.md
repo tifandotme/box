@@ -6,6 +6,7 @@ Deployed apps:
 
 - `fizzy/`
 - `excalidash/`
+- `n8n/`
 
 `terraform/` provisons bucket for backup purposes.
 

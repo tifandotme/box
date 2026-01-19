@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -e
+
+echo "Setting up deployment environment..."
+
+ssh eddies@box.javanese-pound.ts.net bash <<'EOF'
+  set -e
+
+  if ! groups | grep -q docker; then
+    echo "Adding user to docker group..."
+    sudo usermod -aG docker "$USER"
+    sudo systemctl restart docker || sudo service docker restart || true
+  fi
+
+  echo "Creating n8n-storage directory..."
+  mkdir -p "$HOME/n8n-storage"
+  chmod 777 "$HOME/n8n-storage"
+  chown "$USER" "$HOME/n8n-storage"
+EOF
+
+exit 0

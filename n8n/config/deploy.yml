@@ -1,0 +1,120 @@
+service: n8n
+image: tifandotme/n8n
+
+servers:
+  web:
+    - box.javanese-pound.ts.net
+
+ssh:
+  user: eddies
+
+sshkit:
+  max_concurrent_starts: 1
+  dns_retries: 5
+  pool_idle_timeout: 300
+
+proxy:
+  # using custom cert
+  # because Kamal's `ssl: true` feature won't work when the server is "private"
+  # p.s. we need to renew it every 3 months
+  ssl:
+    certificate_pem: SSL_CERTIFICATE_PEM
+    private_key_pem: SSL_PRIVATE_KEY_PEM
+  host: n8n.tifan.me
+  app_port: 5678
+  healthcheck:
+    path: /healthz/readiness
+    interval: 30
+    timeout: 10
+
+env:
+  secret:
+    - N8N_ENCRYPTION_KEY
+    - DB_POSTGRESDB_PASSWORD
+    - N8N_LICENSE_ACTIVATION_KEY
+    - ACTUAL_PASSWORD
+  clear:
+    # Port and protocol
+    N8N_PORT: 5678
+    N8N_PROTOCOL: https
+    N8N_PATH: /
+
+    # Host and URL configuration
+    N8N_HOST: n8n.tifan.me
+    WEBHOOK_URL: https://n8n.tifan.me
+    N8N_EDITOR_BASE_URL: https://n8n.tifan.me
+
+    # Database configuration (Neon PostgreSQL)
+    DB_TYPE: postgresdb
+    DB_POSTGRESDB_DATABASE: neondb
+    DB_POSTGRESDB_USER: neondb_owner
+    DB_POSTGRESDB_HOST: ep-plain-mountain-afhf98oq-pooler.c-2.us-west-2.aws.neon.tech
+    DB_POSTGRESDB_PORT: 5432
+    DB_POSTGRESDB_SCHEMA: public
+    DB_POSTGRESDB_SSL: require
+    DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED: false
+
+    # General settings
+    N8N_USER_FOLDER: /home/node
+    GENERIC_TIMEZONE: Asia/Jakarta
+    TZ: Asia/Jakarta
+    QUEUE_HEALTH_CHECK_ACTIVE: true
+
+    # Runners configuration (for task runner mode)
+    N8N_RUNNERS_ENABLED: true
+    N8N_RUNNERS_INSECURE_MODE: true
+    N8N_RUNNERS_ALLOW_PROTOTYPE_MUTATION: true
+
+    # Code execution settings
+    NODE_FUNCTION_ALLOW_EXTERNAL: "@actual-app/api"
+    NODE_FUNCTION_ALLOW_BUILTIN: "*"
+
+    # Actual Budget integration
+    ACTUAL_SERVER_URL: https://actual.tifan.me
+    ACTUAL_SYNC_ID: 278a95d3-2467-4941-8125-24765283a859
+
+    # Proxy configuration
+    N8N_PROXY_HOPS: 1
+
+    # Disable telemetry and diagnostics
+    N8N_DIAGNOSTICS_ENABLED: false
+    N8N_VERSION_NOTIFICATIONS_ENABLED: false
+    N8N_HIDE_USAGE_PAGE: true
+    EXTERNAL_FRONTEND_HOOKS_URLS: ""
+    N8N_DIAGNOSTICS_CONFIG_FRONTEND: ""
+    N8N_DIAGNOSTICS_CONFIG_BACKEND: ""
+
+    # Security settings
+    N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: true
+    N8N_BLOCK_ENV_ACCESS_IN_NODE: false
+    N8N_GIT_NODE_DISABLE_BARE_REPOS: true
+
+    # Performance tuning
+    N8N_INSIGHTS_FLUSH_INTERVAL_SECONDS: 1800
+
+    # Logging
+    NO_COLOR: true
+
+    # Nodes configuration
+    NODES_EXCLUDE: "[]"
+
+volumes:
+  - /home/eddies/n8n-storage:/home/node/.n8n
+
+registry:
+  server: ghcr.io
+  username:
+    - KAMAL_REGISTRY_USERNAME
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+builder:
+  arch: amd64
+  remote: ssh://eddies@box.javanese-pound.ts.net
+  dockerfile: Dockerfile
+
+aliases:
+  shell: app exec --interactive --reuse "sh"
+  logs: app logs -f # follow
+  lzd: server exec --interactive "TERM=xterm-256color /home/linuxbrew/.linuxbrew/bin/lazydocker"
+  btm: server exec --interactive "TERM=xterm-256color /home/linuxbrew/.linuxbrew/bin/btm -g --process_memory_as_value"
