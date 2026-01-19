@@ -15,4 +15,4 @@ else
   VERSION="$N8N_VERSION"
 fi
 
-N8N_VERSION="$VERSION" kamal deploy --version="$VERSION"
+N8N_VERSION="$VERSION" dotenvx run -- kamal deploy --version="$VERSION"
