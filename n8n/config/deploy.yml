@@ -34,7 +34,7 @@ env:
   secret:
     - N8N_ENCRYPTION_KEY
     - DB_POSTGRESDB_PASSWORD
-    - N8N_LICENSE_ACTIVATION_KEY
+    # - N8N_LICENSE_ACTIVATION_KEY
     - ACTUAL_PASSWORD
   clear:
     # Port and protocol
@@ -51,7 +51,8 @@ env:
     DB_TYPE: postgresdb
     DB_POSTGRESDB_DATABASE: neondb
     DB_POSTGRESDB_USER: neondb_owner
-    DB_POSTGRESDB_HOST: ep-plain-mountain-afhf98oq-pooler.c-2.us-west-2.aws.neon.tech
+    # DB_POSTGRESDB_HOST: ep-plain-mountain-afhf98oq-pooler.c-2.us-west-2.aws.neon.tech
+    DB_POSTGRESDB_HOST: ep-delicate-voice-a1tyu5co-pooler.ap-southeast-1.aws.neon.tech
     DB_POSTGRESDB_PORT: 5432
     DB_POSTGRESDB_SCHEMA: public
     DB_POSTGRESDB_SSL: require
