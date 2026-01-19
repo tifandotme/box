@@ -1,6 +1,9 @@
 service: n8n
 image: tifandotme/n8n
 
+deploy_timeout: 60
+drain_timeout: 30
+
 servers:
   web:
     - box.javanese-pound.ts.net
@@ -26,8 +29,6 @@ proxy:
     path: /healthz/readiness
     interval: 30
     timeout: 15
-    deploy_timeout: 45
-    drain_timeout: 45
 
 env:
   secret:
