@@ -1,6 +1,9 @@
-FROM ghcr.io/basecamp/fizzy:main
+ARG VERSION
+ARG IMAGE
+FROM ${IMAGE}:${VERSION}
 
-LABEL service="fizzy"
+ARG SERVICE_NAME
+LABEL service=${SERVICE_NAME}
 
 # Change rails UID to match host eddies UID for volume ownership
 USER root
