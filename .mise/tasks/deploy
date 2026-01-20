@@ -36,6 +36,8 @@ else
   VERSION=$(echo "$TAG" | sed 's/ (latest)//')
 fi
 
+export VERSION
+
 echo "Deploying $SERVICE_NAME version $VERSION"
 
 dotenvx run -- kamal deploy --version="$VERSION"
