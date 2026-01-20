@@ -5,11 +5,6 @@ FROM ${IMAGE}:${VERSION}
 ARG SERVICE_NAME
 LABEL service=${SERVICE_NAME}
 
-# Change rails UID to match host eddies UID for volume ownership
-USER root
-RUN usermod -u 1001 root
-RUN chown -R root /app
-
 RUN apt-get update && apt-get install -y curl && curl -fsSL https://tailscale.com/install.sh | sh
 
 ENV ALL_PROXY=socks5://localhost:1055
