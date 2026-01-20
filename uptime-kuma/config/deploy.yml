@@ -1,5 +1,5 @@
-service: uptime-kuma
-image: tifandotme/uptime-kuma
+service: <%= ENV.fetch("SERVICE_NAME") %>
+image: tifandotme/<%= ENV.fetch("SERVICE_NAME") %>
 
 servers:
   web:
@@ -17,10 +17,13 @@ sshkit:
   pool_idle_timeout: 300
 
 proxy:
+  # using custom cert
+  # because Kamal's `ssl: true` feature won't work when the server is "private"
+  # p.s. we need to renew it every 3 months
   ssl:
     certificate_pem: SSL_CERTIFICATE_PEM
     private_key_pem: SSL_PRIVATE_KEY_PEM
-  host: uptime.tifan.me
+  host: uptime-kuma.tifan.me
   app_port: 3001
 
 env:
@@ -36,14 +39,7 @@ registry:
     - KAMAL_REGISTRY_PASSWORD
 
 volumes:
-  - /home/eddies/uptime-kuma-data:/app/data
-
-healthcheck:
-  test: ["CMD", "curl", "-f", "http://localhost:3001"]
-  interval: 30s
-  retries: 3
-  start_period: 10s
-  timeout: 5s
+  - /home/eddies/uptime-kuma-storage:/app/data
 
 logging:
   driver: json-file
@@ -54,7 +50,7 @@ logging:
 builder:
   arch: amd64
   remote: ssh://eddies@box.javanese-pound.ts.net
-
-aliases:
-  shell: app exec --interactive --reuse "sh"
-  logs: app logs -f
+  args:
+    IMAGE: <%= ENV.fetch("IMAGE") %>
+    VERSION: <%= ENV.fetch("VERSION", "latest") %>
+    SERVICE_NAME: <%= ENV.fetch("SERVICE_NAME") %>

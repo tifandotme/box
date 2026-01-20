@@ -1,5 +1,5 @@
-service: fizzy
-image: tifandotme/fizzy
+service: <%= ENV.fetch("SERVICE_NAME") %>
+image: tifandotme/<%= ENV.fetch("SERVICE_NAME") %>
 
 servers:
   web:
@@ -48,10 +48,6 @@ registry:
     - KAMAL_REGISTRY_PASSWORD
 
 aliases:
-  shell: app exec --interactive --reuse "bash"
-  logs: app logs -f # follow
-  lzd: server exec --interactive "TERM=xterm-256color /home/linuxbrew/.linuxbrew/bin/lazydocker"
-  btm: server exec --interactive "TERM=xterm-256color /home/linuxbrew/.linuxbrew/bin/btm -g --process_memory_as_value"
   console: app exec --interactive --reuse "bin/rails console"
   dbc: app exec --interactive --reuse "bin/rails dbconsole --include-password"
 
@@ -63,3 +59,7 @@ asset_path: /rails/public/assets
 builder:
   arch: amd64
   remote: ssh://eddies@box.javanese-pound.ts.net
+  args:
+    IMAGE: <%= ENV.fetch("IMAGE") %>
+    VERSION: <%= ENV.fetch("VERSION", "latest") %>
+    SERVICE_NAME: <%= ENV.fetch("SERVICE_NAME") %>

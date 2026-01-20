@@ -1,9 +1,6 @@
-FROM louislam/uptime-kuma:latest
+ARG VERSION=latest
+ARG IMAGE
+FROM ${IMAGE}:${VERSION}
 
-LABEL service="uptime-kuma"
-
-# Change app UID to match host eddies UID for volume ownership
-# USER root
-# RUN usermod -u 1001 node
-# RUN chown -R node /app
-# USER node
+ARG SERVICE_NAME
+LABEL service=${SERVICE_NAME}

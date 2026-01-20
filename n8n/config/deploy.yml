@@ -1,8 +1,5 @@
-service: n8n
-image: tifandotme/n8n
-
-deploy_timeout: 60
-drain_timeout: 30
+service: <%= ENV.fetch("SERVICE_NAME") %>
+image: tifandotme/<%= ENV.fetch("SERVICE_NAME") %>
 
 servers:
   web:
@@ -118,12 +115,10 @@ registry:
 builder:
   arch: amd64
   remote: ssh://eddies@box.javanese-pound.ts.net
-  dockerfile: Dockerfile
   args:
-    N8N_VERSION: <%= ENV.fetch("N8N_VERSION", "latest") %>
+    IMAGE: <%= ENV.fetch("IMAGE") %>
+    VERSION: <%= ENV.fetch("VERSION", "latest") %>
+    SERVICE_NAME: <%= ENV.fetch("SERVICE_NAME") %>
 
-aliases:
-  shell: app exec --interactive --reuse "sh"
-  logs: app logs -f # follow
-  lzd: server exec --interactive "TERM=xterm-256color /home/linuxbrew/.linuxbrew/bin/lazydocker"
-  btm: server exec --interactive "TERM=xterm-256color /home/linuxbrew/.linuxbrew/bin/btm -g --process_memory_as_value"
+deploy_timeout: 60
+drain_timeout: 30
