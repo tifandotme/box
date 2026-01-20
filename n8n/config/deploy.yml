@@ -6,7 +6,10 @@ drain_timeout: 30
 
 servers:
   web:
-    - box.javanese-pound.ts.net
+    hosts:
+      - box.javanese-pound.ts.net
+    options:
+      memory: 800m
 
 ssh:
   user: eddies

@@ -11,4 +11,4 @@ VERSION="$(echo "$LATEST_TAG" | cut -d'@' -f2)"
 
 sed -i '' "s/main/sha-$VERSION/" Dockerfile
 
-kamal deploy --version="$VERSION"
+dotenvx run -- kamal deploy --version="$VERSION"
