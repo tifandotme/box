@@ -3,7 +3,10 @@ image: tifandotme/fizzy
 
 servers:
   web:
-    - box.javanese-pound.ts.net
+    hosts:
+      - box.javanese-pound.ts.net
+    options:
+      memory: 1g
 
 ssh:
   user: eddies
