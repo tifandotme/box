@@ -1,0 +1,60 @@
+service: uptime-kuma
+image: tifandotme/uptime-kuma
+
+servers:
+  web:
+    hosts:
+      - box.javanese-pound.ts.net
+    options:
+      memory: 250m
+
+ssh:
+  user: eddies
+
+sshkit:
+  max_concurrent_starts: 1
+  dns_retries: 5
+  pool_idle_timeout: 300
+
+proxy:
+  ssl:
+    certificate_pem: SSL_CERTIFICATE_PEM
+    private_key_pem: SSL_PRIVATE_KEY_PEM
+  host: uptime.tifan.me
+  app_port: 3001
+
+env:
+  clear:
+    TZ: Asia/Jakarta
+    UMASK: "0022"
+
+registry:
+  server: ghcr.io
+  username:
+    - KAMAL_REGISTRY_USERNAME
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+volumes:
+  - /home/eddies/uptime-kuma-data:/app/data
+
+healthcheck:
+  test: ["CMD", "curl", "-f", "http://localhost:3001"]
+  interval: 30s
+  retries: 3
+  start_period: 10s
+  timeout: 5s
+
+logging:
+  driver: json-file
+  options:
+    max-size: 10m
+    max-file: "3"
+
+builder:
+  arch: amd64
+  remote: ssh://eddies@box.javanese-pound.ts.net
+
+aliases:
+  shell: app exec --interactive --reuse "sh"
+  logs: app logs -f

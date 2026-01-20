@@ -12,6 +12,7 @@ on:
           - fizzy
           - excalidash
           - n8n
+          - uptime-kuma
 
 jobs:
   generate:
