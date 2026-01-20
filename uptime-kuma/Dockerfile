@@ -5,7 +5,11 @@ FROM ${IMAGE}:${VERSION}
 ARG SERVICE_NAME
 LABEL service=${SERVICE_NAME}
 
+USER root
+
 RUN apt-get update && apt-get install -y curl && curl -fsSL https://tailscale.com/install.sh | sh
+
+USER node
 
 ENV ALL_PROXY=socks5://localhost:1055
 ENV HTTP_PROXY=http://localhost:1055
