@@ -1,6 +1,3 @@
 [submodule "external/actual-terraform"]
 	path = external/actual-terraform
 	url = git@github.com:tifandotme/actual-terraform.git
-[submodule "external/n8n-terraform"]
-	path = external/n8n-terraform
-	url = git@github.com:tifandotme/n8n-terraform.git
