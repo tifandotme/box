@@ -6,11 +6,10 @@ on:
       service:
         description: "Service to generate certificate for"
         required: true
-        default: "fizzy"
+        default: "n8n"
         type: choice
         options:
           - fizzy
-          - excalidash
           - n8n
           - uptime-kuma
 
