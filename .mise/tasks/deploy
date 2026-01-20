@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+#MISE description="Deploy specified app using Kamal with auto version detection"
+
+#USAGE arg "<app>" help="App directory to deploy" {
+#USAGE   choices "n8n" "fizzy" "uptime-kuma"
+#USAGE }
+#USAGE flag "--version <version>" help="Version to deploy"
+
+set -e
+
+export SERVICE_NAME="${usage_app?}"
+cd "$SERVICE_NAME" || {
+  echo "App directory '$SERVICE_NAME' not found"
+  exit 1
+}
+
+# Use provided version or list Docker image tags
+if [ -n "${usage_version}" ]; then
+  VERSION="${usage_version}"
+else
+  IMAGE=$(dotenvx get IMAGE)
+  TAGS_JSON=$(skopeo list-tags docker://"$IMAGE")
+  TAGS=$(echo "$TAGS_JSON" | jq -r '.Tags[]' | sort -Vr)
+  if [ -z "$TAGS" ]; then
+    echo "No tags found for $IMAGE"
+    exit 1
+  fi
+  # Mark the latest (first in sorted descending) with (latest)
+  TAGS=$(echo "$TAGS" | sed '1s/$/ (latest)/')
+  TAG=$(echo "$TAGS" | fzf --height=40% --layout=reverse --prompt="Select version: ")
+  if [ -z "$TAG" ]; then
+    echo "No version selected"
+    exit 1
+  fi
+  VERSION=$(echo "$TAG" | sed 's/ (latest)//')
+fi
+
+echo "Deploying $SERVICE_NAME version $VERSION"
+
+dotenvx run -- kamal deploy --version="$VERSION"
