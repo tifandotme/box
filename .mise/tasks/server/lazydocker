@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+#MISE description="Run a command in server"
+
+set -e
+
+export SERVICE_NAME="n8n"
+cd "$SERVICE_NAME" || {
+  echo "App directory '$SERVICE_NAME' not found"
+  exit 1
+}
+
+dotenvx run -- kamal server exec --interactive "TERM=xterm-256color /home/linuxbrew/.linuxbrew/bin/lazydocker"
