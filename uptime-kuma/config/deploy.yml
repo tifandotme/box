@@ -30,6 +30,8 @@ env:
   clear:
     TZ: Asia/Jakarta
     UMASK: "0022"
+  secret:
+    - TS_AUTHKEY
 
 registry:
   server: ghcr.io
