@@ -1,5 +1,5 @@
-service: <%= ENV.fetch("SERVICE_NAME") %>
-image: tifandotme/<%= ENV.fetch("SERVICE_NAME") %>
+service: <%= ENV.fetch("SERVICE_NAME", File.basename(File.expand_path("..", __FILE__))) %>
+image: tifandotme/<%= ENV.fetch("SERVICE_NAME", File.basename(File.expand_path("..", __FILE__))) %>
 
 servers:
   web:
@@ -62,4 +62,4 @@ builder:
   args:
     IMAGE: <%= ENV.fetch("IMAGE") %>
     VERSION: <%= ENV.fetch("VERSION", "latest") %>
-    SERVICE_NAME: <%= ENV.fetch("SERVICE_NAME") %>
+    SERVICE_NAME: <%= ENV.fetch("SERVICE_NAME", File.basename(File.expand_path("..", __FILE__))) %>
