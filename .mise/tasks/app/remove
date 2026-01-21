@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+#MISE description="Remove app from the specified directory's app container using Kamal"
+
+#USAGE arg "<dir>" help="Directory to exec into"
+
+set -e
+
+cd "${usage_dir?}"
+
+dotenvx run -- kamal app remove

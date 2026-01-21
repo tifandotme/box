@@ -2,16 +2,10 @@
 
 #MISE description="See app logs"
 
-#USAGE arg "<app>" help="App directory to deploy" {
-#USAGE   choices "n8n" "fizzy" "uptime-kuma"
-#USAGE }
+#USAGE arg "<dir>" help="Directory to see logs for"
 
 set -e
 
-export SERVICE_NAME="${usage_app?}"
-cd "$SERVICE_NAME" || {
-  echo "App directory '$SERVICE_NAME' not found"
-  exit 1
-}
+cd "${usage_dir?}"
 
 dotenvx run -- kamal app logs --follow

@@ -1,17 +1,11 @@
 #!/usr/bin/env bash
 
-#MISE description="Exec into apps"
+#MISE description="Execute a shell in the specified directory's app container using Kamal"
 
-#USAGE arg "<app>" help="App directory to deploy" {
-#USAGE   choices "n8n" "fizzy" "uptime-kuma"
-#USAGE }
+#USAGE arg "<dir>" help="Directory to exec into"
 
 set -e
 
-export SERVICE_NAME="${usage_app?}"
-cd "$SERVICE_NAME" || {
-  echo "App directory '$SERVICE_NAME' not found"
-  exit 1
-}
+cd "${usage_dir?}"
 
 dotenvx run -- kamal app exec --interactive --reuse "bash"
