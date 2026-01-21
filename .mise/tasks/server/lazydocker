@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#MISE description="Run a command in server"
+#MISE description="Run lazydocker in server"
 
 set -e
 

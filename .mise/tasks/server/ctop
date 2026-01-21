@@ -1,14 +1,10 @@
 #!/usr/bin/env bash
 
-#MISE description="Exec into apps"
-
-#USAGE arg "<app>" help="App directory to deploy" {
-#USAGE   choices "n8n" "fizzy" "uptime-kuma"
-#USAGE }
+#MISE description="Run ctop in server"
 
 set -e
 
-export SERVICE_NAME="${usage_app?}"
+export SERVICE_NAME="n8n"
 cd "$SERVICE_NAME" || {
   echo "App directory '$SERVICE_NAME' not found"
   exit 1
