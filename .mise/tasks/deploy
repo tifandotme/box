@@ -1,15 +1,13 @@
 #!/usr/bin/env bash
 
-#MISE description="Deploy specified app using Kamal with auto version detection"
+#MISE description="Deploy a specified directory using Kamal, automatically detecting version if not provided"
 
-#USAGE arg "<app>" help="App directory to deploy" {
-#USAGE   choices "n8n" "fizzy" "uptime-kuma"
-#USAGE }
+#USAGE arg "<dir>" help="Directory to deploy"
 #USAGE flag "--version <version>" help="Version to deploy"
 
 set -e
 
-export SERVICE_NAME="${usage_app?}"
+export SERVICE_NAME="${usage_dir?}"
 cd "$SERVICE_NAME" || {
   echo "App directory '$SERVICE_NAME' not found"
   exit 1
