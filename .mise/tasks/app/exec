@@ -14,4 +14,4 @@ cd "$SERVICE_NAME" || {
   exit 1
 }
 
-dotenvx run -- kamal app logs --follow
+dotenvx run -- kamal app exec --interactive --reuse "bash"
