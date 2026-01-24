@@ -34,8 +34,9 @@ env:
   secret:
     - N8N_ENCRYPTION_KEY
     - DB_POSTGRESDB_PASSWORD
-    # - N8N_LICENSE_ACTIVATION_KEY
+    - N8N_LICENSE_ACTIVATION_KEY
     - ACTUAL_PASSWORD
+    - GMAIL_WEBHOOK_AUTH_KEY
   clear:
     # Port and protocol
     N8N_PORT: 5678
