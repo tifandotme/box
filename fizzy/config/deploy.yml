@@ -67,3 +67,6 @@ builder:
     IMAGE: <%= ENV.fetch("IMAGE") %>
     VERSION: <%= ENV.fetch("VERSION", "latest") %>
     SERVICE_NAME: <%= ENV.fetch("SERVICE_NAME", File.basename(File.expand_path("..", __FILE__))) %>
+
+deploy_timeout: 60
+drain_timeout: 30
