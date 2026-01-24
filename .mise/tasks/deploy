@@ -18,15 +18,14 @@ if [ -n "${usage_version}" ]; then
   VERSION="${usage_version}"
 else
   IMAGE=$(dotenvx get IMAGE)
-  TAGS_JSON=$(skopeo list-tags docker://"$IMAGE")
-  TAGS=$(echo "$TAGS_JSON" | jq -r '.Tags[]' | sort -Vr)
+  TAGS=$(skopeo list-tags docker://"$IMAGE" | jq -r '.Tags[]')
   if [ -z "$TAGS" ]; then
     echo "No tags found for $IMAGE"
     exit 1
   fi
   # Mark the latest (first in sorted descending) with (latest)
   TAGS=$(echo "$TAGS" | sed '1s/$/ (latest)/')
-  TAG=$(echo "$TAGS" | fzf --height=40% --layout=reverse --prompt="Select version: ")
+  TAG=$(echo "$TAGS" | fzf --tac --height=40% --layout=reverse --prompt="Select version: ")
   if [ -z "$TAG" ]; then
     echo "No version selected"
     exit 1
