@@ -24,6 +24,10 @@ proxy:
     certificate_pem: SSL_CERTIFICATE_PEM
     private_key_pem: SSL_PRIVATE_KEY_PEM
   host: fizzy.tifan.me
+  healthcheck:
+    path: /up
+    interval: 30
+    timeout: 10
 
 env:
   secret:
