@@ -8,4 +8,5 @@ LABEL service=${SERVICE_NAME}
 # Install Actual Budget API
 USER root
 RUN npm install -g @actual-app/api
+RUN npm install -g @toon-format/toon
 USER node

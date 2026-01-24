@@ -71,7 +71,7 @@ env:
     N8N_RUNNERS_ALLOW_PROTOTYPE_MUTATION: true
 
     # Code execution settings
-    NODE_FUNCTION_ALLOW_EXTERNAL: "@actual-app/api"
+    NODE_FUNCTION_ALLOW_EXTERNAL: "@actual-app/api,@toon-format/toon"
     NODE_FUNCTION_ALLOW_BUILTIN: "*"
 
     # Actual Budget integration
