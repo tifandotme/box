@@ -5,8 +5,8 @@ servers:
   web:
     hosts:
       - box.javanese-pound.ts.net
-    options:
-      memory: 800m
+    # options:
+    #   memory: 800m
 
 ssh:
   user: eddies
