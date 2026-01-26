@@ -97,6 +97,9 @@ env:
     # Performance tuning
     N8N_INSIGHTS_FLUSH_INTERVAL_SECONDS: 1800
 
+    N8N_RUNNERS_MAX_OLD_SPACE_SIZE: 1024
+    N8N_RUNNERS_MAX_CONCURRENCY: 1
+
     # Logging
     NO_COLOR: true
 
