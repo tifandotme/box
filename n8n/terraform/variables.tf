@@ -5,7 +5,3 @@ variable "project_id" {
 variable "region" {
   type = string
 }
-
-variable "webhook_auth_key" {
-  type = string
-}
