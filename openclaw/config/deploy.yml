@@ -7,7 +7,7 @@ servers:
       - box.javanese-pound.ts.net
     options:
       memory: 2g
-    cmd: node dist/index.js gateway
+    cmd: node dist/index.js gateway --allow-unconfigured
 
 ssh:
   user: eddies
