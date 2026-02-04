@@ -7,7 +7,7 @@ servers:
       - box.javanese-pound.ts.net
     options:
       memory: 2g
-    cmd: openclaw gateway
+    cmd: node dist/index.js gateway
 
 ssh:
   user: eddies
