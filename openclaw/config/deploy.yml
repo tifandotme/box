@@ -31,7 +31,6 @@ env:
   secret:
     - OPENCLAW_GATEWAY_TOKEN
     - GOG_KEYRING_PASSWORD
-    - GEMINI_API_KEY
   clear:
     # Gateway configuration
     OPENCLAW_GATEWAY_BIND: lan
