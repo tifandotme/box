@@ -19,7 +19,11 @@ USER root
 # RUN curl -fsSL https://github.com/steipete/goplaces/releases/latest/download/goplaces_Linux_x86_64.tar.gz | tar -xz -C /usr/local/bin
 # RUN curl -fsSL https://github.com/steipete/wacli/releases/latest/download/wacli_Linux_x86_64.tar.gz | tar -xz -C /usr/local/bin
 
-# Switch back to node user (security)
+# Change node UID to match host eddies UID (1001) for volume ownership
+USER root
+RUN usermod -u 1001 node && \
+    groupmod -g 1001 node && \
+    chown -R node /home/node
 USER node
 
 # --- END EXTENSIONS ---
