@@ -37,6 +37,8 @@ env:
     # Gateway configuration
     OPENCLAW_GATEWAY_BIND: lan
     OPENCLAW_GATEWAY_PORT: 18789
+    # Trust Kamal Proxy Docker network for proper client IP detection
+    OPENCLAW_GATEWAY_TRUSTED_PROXIES: '["172.18.0.0/16", "127.0.0.1"]'
     # User environment
     HOME: /home/node
     NODE_ENV: production
