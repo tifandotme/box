@@ -26,11 +26,6 @@ proxy:
     private_key_pem: SSL_PRIVATE_KEY_PEM
   host: openclaw.tifan.me
   app_port: 18789
-  healthcheck:
-    cmd: node dist/index.js health --token "$OPENCLAW_GATEWAY_TOKEN"
-    interval: 15
-    timeout: 10
-    max_attempts: 10
 
 env:
   secret:
