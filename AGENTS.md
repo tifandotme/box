@@ -14,6 +14,8 @@ All commands use [mise](https://mise.jdx.dev/) and assume you're in the repo roo
 | Remove app        | `mise run app:remove <dir>`                        |
 | Server monitoring | `mise run server:exec btm` / `lazydocker` / `ctop` |
 
+**Never run deployment commands** (`mise run deploy`, `mise run app:remove`, etc.). Leave all deployment operations to the user.
+
 ## Secrets & Environment
 
 - Secrets managed via [dotenvx](https://dotenvx.com/) with `DOTENV_PRIVATE_KEY`

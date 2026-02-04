@@ -31,3 +31,5 @@
 - Runs as `node` user (not root)
 - Expects persistent config in `~/.openclaw`
 - Gateway token injected at runtime via env
+
+
