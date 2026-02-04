@@ -11,7 +11,7 @@ on:
         options:
           - fizzy
           - n8n
-          - uptime-kuma
+          - openclaw
 
 jobs:
   generate:
