@@ -18,8 +18,9 @@ ssh eddies@box.javanese-pound.ts.net bash <<'EOF'
   mkdir -p "$HOME/openclaw-workspace"
   chmod 777 "$HOME/openclaw-config"
   chmod 777 "$HOME/openclaw-workspace"
-  chown -R "$USER" "$HOME/openclaw-config"
-  chown -R "$USER" "$HOME/openclaw-workspace"
+  # Try chown but don't fail if it doesn't work (e.g., files owned by root from previous runs)
+  chown -R "$USER" "$HOME/openclaw-config" 2>/dev/null || true
+  chown -R "$USER" "$HOME/openclaw-workspace" 2>/dev/null || true
 EOF
 
 exit 0
