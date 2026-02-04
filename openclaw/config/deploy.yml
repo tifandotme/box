@@ -33,7 +33,6 @@ env:
     - GOG_KEYRING_PASSWORD
     - GEMINI_API_KEY
   clear:
-    OPENCLAW_DEFAULT_MODEL: google/gemini-2.5-flash-lite
     # Gateway configuration
     OPENCLAW_GATEWAY_BIND: lan
     OPENCLAW_GATEWAY_PORT: 18789
@@ -57,6 +56,9 @@ registry:
     - KAMAL_REGISTRY_USERNAME
   password:
     - KAMAL_REGISTRY_PASSWORD
+
+aliases:
+  openclaw: app exec "node dist/index.js"
 
 builder:
   arch: amd64
