@@ -1,0 +1,68 @@
+service: <%= ENV.fetch("SERVICE_NAME", File.basename(File.expand_path("..", __FILE__))) %>
+image: tifandotme/<%= ENV.fetch("SERVICE_NAME", File.basename(File.expand_path("..", __FILE__))) %>
+
+servers:
+  web:
+    hosts:
+      - box.javanese-pound.ts.net
+    options:
+      memory: 2g
+
+ssh:
+  user: eddies
+
+sshkit:
+  max_concurrent_starts: 1
+  dns_retries: 5
+  pool_idle_timeout: 300
+
+proxy:
+  # using custom cert
+  # because Kamal's `ssl: true` feature won't work when the server is "private"
+  # p.s. we need to renew it every 3 months
+  ssl:
+    certificate_pem: SSL_CERTIFICATE_PEM
+    private_key_pem: SSL_PRIVATE_KEY_PEM
+  host: openclaw.tifan.me
+  app_port: 18789
+  healthcheck:
+    path: /up
+    interval: 30
+    timeout: 10
+
+env:
+  secret:
+    - OPENCLAW_GATEWAY_TOKEN
+    - GOG_KEYRING_PASSWORD
+  clear:
+    # Gateway configuration
+    OPENCLAW_GATEWAY_BIND: lan
+    OPENCLAW_GATEWAY_PORT: 18789
+    # User environment
+    HOME: /home/node
+    NODE_ENV: production
+    TERM: xterm-256color
+    XDG_CONFIG_HOME: /home/node/.openclaw
+    # Path includes common binary locations
+    PATH: /home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+volumes:
+  - /home/eddies/openclaw-config:/home/node/.openclaw
+  - /home/eddies/openclaw-workspace:/home/node/.openclaw/workspace
+
+registry:
+  server: ghcr.io
+  username:
+    - KAMAL_REGISTRY_USERNAME
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+builder:
+  arch: amd64
+  remote: ssh://eddies@box.javanese-pound.ts.net
+  args:
+    SERVICE_NAME: <%= ENV.fetch("SERVICE_NAME", File.basename(File.expand_path("..", __FILE__))) %>
+    VERSION: <%= ENV.fetch("VERSION", "main") %>
+
+deploy_timeout: 120
+drain_timeout: 30

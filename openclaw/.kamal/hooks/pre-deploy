@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -e
+
+echo "Setting up deployment environment..."
+
+ssh eddies@box.javanese-pound.ts.net bash <<'EOF'
+  set -e
+
+  if ! groups | grep -q docker; then
+    echo "Adding user to docker group..."
+    sudo usermod -aG docker "$USER"
+    sudo systemctl restart docker || sudo service docker restart || true
+  fi
+
+  echo "Creating openclaw directories..."
+  mkdir -p "$HOME/openclaw-config"
+  mkdir -p "$HOME/openclaw-workspace"
+  chmod 777 "$HOME/openclaw-config"
+  chmod 777 "$HOME/openclaw-workspace"
+  chown -R "$USER" "$HOME/openclaw-config"
+  chown -R "$USER" "$HOME/openclaw-workspace"
+EOF
+
+exit 0
