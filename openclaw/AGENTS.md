@@ -18,18 +18,16 @@
 
 ## JIT Index
 
-| Find               | Command                                 |
-| ------------------ | --------------------------------------- | ---------------------------- |
-| Deploy config      | `cat config/deploy.yml`                 |
-| Volumes mounted    | `rg "^volumes:" config/deploy.yml -A 5` |
-| Available binaries | `rg "curl.*tar" Dockerfile`             |
-| Custom aliases     | `rg "^aliases:" config/deploy.yml -A 3` |
-| All env vars       | `rg -N "(clear                          | secret):" config/deploy.yml` |
+| Find               | Command                                      |
+| ------------------ | -------------------------------------------- |
+| Deploy config      | `cat config/deploy.yml`                      |
+| Volumes mounted    | `rg "^volumes:" config/deploy.yml -A 5`      |
+| Available binaries | `rg "curl.*tar" Dockerfile`                  |
+| Custom aliases     | `rg "^aliases:" config/deploy.yml -A 3`      |
+| All env vars       | `rg -N "(clear\|secret):" config/deploy.yml` |
 
 ## Notes
 
 - Runs as `node` user (not root)
 - Expects persistent config in `~/.openclaw`
 - Gateway token injected at runtime via env
-
-
