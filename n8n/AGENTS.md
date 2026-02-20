@@ -15,12 +15,12 @@
 ## JIT Index
 
 | Find                      | Command                                               |
-| ------------------------- | ----------------------------------------------------- | ---------------------------------- |
+| ------------------------- | ----------------------------------------------------- |
 | Deploy config             | `cat config/deploy.yml`                               |
 | Custom node modules       | `rg "npm install" Dockerfile`                         |
 | External packages allowed | `rg "NODE_FUNCTION_ALLOW_EXTERNAL" config/deploy.yml` |
 | Terraform resources       | `ls terraform/*.tf`                                   |
-| All env vars              | `rg -N "(clear                                        | secret):" config/deploy.yml -A 20` |
+| All env vars              | `rg -N "(clear\|secret):" config/deploy.yml -A 20`    |
 
 ## Terraform Resources
 

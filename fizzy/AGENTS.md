@@ -27,12 +27,12 @@ Automated via GitHub Actions (see root AGENTS.md). Workflow: stop → rsync volu
 
 ## JIT Index
 
-| Find          | Command                                |
-| ------------- | -------------------------------------- | ---------------------------- |
-| Mise tasks    | `cat mise.toml`                        |
-| Deploy config | `cat config/deploy.yml`                |
-| All env vars  | `rg -N "(clear                         | secret):" config/deploy.yml` |
-| Secrets list  | `rg -A 10 "secret:" config/deploy.yml` |
+| Find          | Command                                      |
+| ------------- | -------------------------------------------- |
+| Mise tasks    | `cat mise.toml`                              |
+| Deploy config | `cat config/deploy.yml`                      |
+| All env vars  | `rg -N "(clear\|secret):" config/deploy.yml` |
+| Secrets list  | `rg -A 10 "secret:" config/deploy.yml`       |
 
 ## Common Commands
 
