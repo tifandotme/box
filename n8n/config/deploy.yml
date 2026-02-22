@@ -33,6 +33,7 @@ proxy:
 env:
   secret:
     - N8N_ENCRYPTION_KEY
+    - POSTGRES_PASSWORD
     - DB_POSTGRESDB_PASSWORD
     - N8N_LICENSE_ACTIVATION_KEY
     - ACTUAL_PASSWORD
@@ -47,16 +48,15 @@ env:
     WEBHOOK_URL: https://n8n.tifan.me
     N8N_EDITOR_BASE_URL: https://n8n.tifan.me
 
-    # Database configuration (Neon PostgreSQL)
+    # Database configuration (Kamal PostgreSQL Accessory)
     DB_TYPE: postgresdb
-    DB_POSTGRESDB_DATABASE: neondb
-    DB_POSTGRESDB_USER: neondb_owner
-    # DB_POSTGRESDB_HOST: ep-plain-mountain-afhf98oq-pooler.c-2.us-west-2.aws.neon.tech
-    DB_POSTGRESDB_HOST: ep-delicate-voice-a1tyu5co-pooler.ap-southeast-1.aws.neon.tech
+    DB_POSTGRESDB_DATABASE: n8n
+    DB_POSTGRESDB_USER: n8n
+    DB_POSTGRESDB_HOST: n8n-postgres
     DB_POSTGRESDB_PORT: 5432
     DB_POSTGRESDB_SCHEMA: public
-    DB_POSTGRESDB_SSL: require
-    DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED: false
+    # SSL not needed for internal Docker network
+    DB_POSTGRESDB_SSL: false
 
     # General settings
     N8N_USER_FOLDER: /home/node
@@ -124,3 +124,18 @@ builder:
 
 deploy_timeout: 60
 drain_timeout: 30
+
+accessories:
+  postgres:
+    image: postgres:17-alpine
+    host: box.javanese-pound.ts.net
+    port: 5432:5432
+    env:
+      secret:
+        - POSTGRES_PASSWORD
+      clear:
+        POSTGRES_USER: n8n
+        POSTGRES_DB: n8n
+        POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=en_US.utf8"
+    directories:
+      - postgres-data:/var/lib/postgresql/data
