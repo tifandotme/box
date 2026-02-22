@@ -63,6 +63,7 @@ env:
     GENERIC_TIMEZONE: Asia/Jakarta
     TZ: Asia/Jakarta
     QUEUE_HEALTH_CHECK_ACTIVE: true
+    N8N_DISABLED_MODULES: "chat-hub"
 
     # Runners configuration (for task runner mode)
     N8N_RUNNERS_ENABLED: true
