@@ -123,7 +123,7 @@ builder:
     VERSION: <%= ENV.fetch("VERSION", "latest") %>
     SERVICE_NAME: <%= ENV.fetch("SERVICE_NAME", File.basename(File.expand_path("..", __FILE__))) %>
 
-deploy_timeout: 60
+deploy_timeout: 180
 drain_timeout: 30
 
 accessories:
