@@ -43,6 +43,9 @@ env:
     N8N_PROTOCOL: https
     N8N_PATH: /
 
+    # Fix IPv6 connectivity issues (forces Node to prefer IPv4)
+    NODE_OPTIONS: "--dns-result-order=ipv4first"
+
     # Host and URL configuration
     N8N_HOST: n8n.tifan.me
     WEBHOOK_URL: https://n8n.tifan.me
