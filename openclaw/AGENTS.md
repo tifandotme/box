@@ -1,6 +1,6 @@
 # OpenClaw
 
-[OpenClaw](https://github.com/openclaw/openclaw) gateway: AI assistant shell that exposes a WebSocket/control plane (default port 18789). This app wraps the official `ghcr.io/openclaw/openclaw` image, rebases the gateway onto `--bind lan` for Kamal Proxy, and publishes to `ghcr.io/tifandotme/openclaw`.
+[OpenClaw](https://github.com/openclaw/openclaw) gateway: AI assistant shell that exposes a WebSocket/control plane (default port 18789). Like n8n, **`IMAGE` in `.env` is the upstream pull** (`ghcr.io/openclaw/openclaw`); `config/deploy.yml` still sets `image: tifandotme/openclaw` as the push/deploy name. The Dockerfile adds `--bind lan` for Kamal Proxy.
 
 ## Key patterns
 
@@ -19,8 +19,8 @@
 
 1. Cert + DNS in place (or `kamal proxy` will not get TLS from the paths in `.kamal/secrets`).
 2. From repo root: `cd openclaw` and `dotenvx run -- kamal setup` (or your usual deploy path). Do not run production deploys from the assistant unless the repo owner approves.
-3. Pick an upstream tag that exists on `ghcr.io/openclaw/openclaw` (for example `v2026.4.9`); the thin `Dockerfile` uses it as the `VERSION` build arg.
-4. After the image exists on `ghcr.io/tifandotme/openclaw`, `mise run deploy openclaw` (or with `--version <tag>`) can list tags.
+3. Pick a tag that exists on the upstream image in `.env` (for example `v2026.4.9`); Kamal passes it as `VERSION`.
+4. `mise run deploy openclaw` uses `skopeo` against `IMAGE` from `.env` to pick versions; the built image is pushed as `ghcr.io/tifandotme/openclaw` per `deploy.yml`.
 
 ## Optional
 
