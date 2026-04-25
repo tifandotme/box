@@ -1,5 +1,6 @@
 ARG VERSION
-FROM ghcr.io/openclaw/openclaw:${VERSION}
+ARG IMAGE
+FROM ${IMAGE}:${VERSION}
 
 ARG SERVICE_NAME
 LABEL service=${SERVICE_NAME}
