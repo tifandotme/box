@@ -54,9 +54,9 @@ jobs:
 
       - name: Create directory on server
         run: |
-          ssh eddies@box.javanese-pound.ts.net "mkdir -p /home/eddies/.kamal/proxy/apps-config/${{ inputs.service }}/tls/web/"
+          ssh -o StrictHostKeyChecking=accept-new eddies@box.javanese-pound.ts.net "mkdir -p /home/eddies/.kamal/proxy/apps-config/${{ inputs.service }}/tls/web/"
 
       - name: Copy certificates to server
         run: |
-          scp ./letsencrypt/live/${{ inputs.service }}.tifan.me/fullchain.pem eddies@box.javanese-pound.ts.net:/home/eddies/.kamal/proxy/apps-config/${{ inputs.service }}/tls/web/cert.pem
-          scp ./letsencrypt/live/${{ inputs.service }}.tifan.me/privkey.pem eddies@box.javanese-pound.ts.net:/home/eddies/.kamal/proxy/apps-config/${{ inputs.service }}/tls/web/key.pem
+          scp -o StrictHostKeyChecking=accept-new ./letsencrypt/live/${{ inputs.service }}.tifan.me/fullchain.pem eddies@box.javanese-pound.ts.net:/home/eddies/.kamal/proxy/apps-config/${{ inputs.service }}/tls/web/cert.pem
+          scp -o StrictHostKeyChecking=accept-new ./letsencrypt/live/${{ inputs.service }}.tifan.me/privkey.pem eddies@box.javanese-pound.ts.net:/home/eddies/.kamal/proxy/apps-config/${{ inputs.service }}/tls/web/key.pem
