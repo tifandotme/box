@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+#MISE description="kamal proxy reboot — reload TLS on box (brief outage). Needs DOTENV_PRIVATE_KEY + n8n/.kamal/secrets."
+
+set -e
+
+cd n8n
+
+export IMAGE=tifandotme/n8n
+export VERSION=latest
+
+dotenvx run -- kamal proxy reboot -c config/deploy.yml -y
