@@ -1,5 +1,3 @@
-# Thin wrap: publish to ghcr.io/tifandotme/openclaw (Kamal convention).
-# Upstream defaults to loopback bind; Kamal Proxy needs LAN bind.
 ARG VERSION
 FROM ghcr.io/openclaw/openclaw:${VERSION}
 
