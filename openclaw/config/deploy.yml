@@ -1,0 +1,64 @@
+service: <%= ENV.fetch("SERVICE_NAME", File.basename(File.expand_path("..", __FILE__))) %>
+image: tifandotme/<%= ENV.fetch("SERVICE_NAME", File.basename(File.expand_path("..", __FILE__))) %>
+
+servers:
+  web:
+    hosts:
+      - box.javanese-pound.ts.net
+    options:
+      memory: 1g
+
+ssh:
+  user: eddies
+
+sshkit:
+  max_concurrent_starts: 1
+  dns_retries: 5
+  pool_idle_timeout: 300
+
+proxy:
+  # using custom cert
+  # because Kamal's `ssl: true` feature won't work when the server is "private"
+  # p.s. we need to renew it every 3 months
+  ssl:
+    certificate_pem: SSL_CERTIFICATE_PEM
+    private_key_pem: SSL_PRIVATE_KEY_PEM
+  host: openclaw.tifan.me
+  app_port: 18789
+  healthcheck:
+    path: /healthz
+    interval: 30
+    timeout: 15
+
+env:
+  secret:
+    - OPENCLAW_GATEWAY_TOKEN
+  clear:
+    NODE_ENV: production
+    OPENCLAW_GATEWAY_BIND: lan
+    OPENCLAW_GATEWAY_PORT: "18789"
+    HOME: /home/node
+    TERM: xterm-256color
+    XDG_CONFIG_HOME: /home/node/.openclaw
+
+volumes:
+  - /home/eddies/openclaw-storage/config:/home/node/.openclaw
+  - /home/eddies/openclaw-storage/workspace:/home/node/.openclaw/workspace
+
+registry:
+  server: ghcr.io
+  username:
+    - KAMAL_REGISTRY_USERNAME
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+builder:
+  arch: amd64
+  remote: ssh://eddies@box.javanese-pound.ts.net
+  args:
+    IMAGE: <%= ENV.fetch("IMAGE") %>
+    VERSION: <%= ENV.fetch("VERSION", "latest") %>
+    SERVICE_NAME: <%= ENV.fetch("SERVICE_NAME", File.basename(File.expand_path("..", __FILE__))) %>
+
+deploy_timeout: 120
+drain_timeout: 30
