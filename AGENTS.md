@@ -1,20 +1,12 @@
 # Box
 
-Infrastructure monorepo managing containerized app deployments on a private VPS using Kamal v2. See JIT Index below to discover current apps and structure—do not trust static lists.
+Infrastructure monorepo managing containerized app deployments on a private VPS using Kamal v2. Use the JIT Index below to discover current apps and structure.
 
 ## Universal Commands
 
-All commands use [mise](https://mise.jdx.dev/) and assume you're in the repo root:
+All commands use [mise](https://mise.jdx.dev/) from the repo root. Run `mise tasks` to list what is available. Task names and scripts live in `mise.toml` and `.mise/tasks/`.
 
-| Task              | Command                                            |
-| ----------------- | -------------------------------------------------- |
-| Deploy app        | `mise run deploy <dir>`                            |
-| App shell         | `mise run app:exec <dir>`                          |
-| App logs          | `mise run app:logs <dir>`                          |
-| Remove app        | `mise run app:remove <dir>`                        |
-| Server monitoring | `mise run server:exec btm` / `lazydocker` / `ctop` |
-
-**Never run deployment commands** (`mise run deploy`, `mise run app:remove`, etc.). Leave all deployment operations to the user.
+**Never run deployment commands** (`mise run deploy`, `mise run app:remove`, or anything that changes production). Leave those to the user.
 
 ## Secrets & Environment
 
@@ -30,31 +22,22 @@ All commands use [mise](https://mise.jdx.dev/) and assume you're in the repo roo
 
 ## GitHub Actions
 
-Workflows live in [.github/workflows/](.github/workflows/):
-
-- `fizzy.backup.yml` - Daily backup to GCS (stops app → syncs volume → uploads → restarts)
-- `fizzy.restore.yml` - Restore from GCS backup
-- `certbot.yml` - Generate SSL certs via Cloudflare DNS (required for private server)
+Workflows live in [.github/workflows/](.github/workflows/). List files with the **GitHub workflows** command in the JIT Index below.
 
 ## JIT Index
 
-Discover current state instead of trusting stale paths:
+Commands (repo root):
 
-| Find                       | Command                                            |
-| -------------------------- | -------------------------------------------------- | ------------ |
-| **Apps (with deploy.yml)** | `ls \*/config/deploy.yml 2>/dev/null               | cut -d/ -f1` |
-| **Apps (with AGENTS.md)**  | `ls \*/AGENTS.md 2>/dev/null                       | cut -d/ -f1` |
-| Dockerfiles                | `ls */Dockerfile 2>/dev/null`                      |
-| Mise tasks                 | `ls .mise/tasks/* .mise/tasks/**/* 2>/dev/null`    |
-| GitHub workflows           | `ls .github/workflows/*.yml 2>/dev/null`           |
-| Encrypted env files        | `ls */.env .env 2>/dev/null`                       |
-| Terraform resources        | `ls terraform/*.tf n8n/terraform/*.tf 2>/dev/null` |
+- **Apps (with deploy.yml):** `ls */config/deploy.yml 2>/dev/null | cut -d/ -f1`
+- **Apps (with AGENTS.md):** `ls */AGENTS.md 2>/dev/null | cut -d/ -f1`
+- **Dockerfiles:** `ls */Dockerfile 2>/dev/null`
+- **Mise tasks:** `mise tasks`
+- **GitHub workflows:** `ls .github/workflows/*.yml 2>/dev/null`
+- **Encrypted env files:** `ls */.env .env 2>/dev/null`
+- **Terraform resources:** `ls terraform/*.tf n8n/terraform/*.tf 2>/dev/null`
 
 ## Per-App Details
 
-AGENTS.md files in each app directory (discover with JIT Index above):
+Each app may have an `AGENTS.md` for stack-specific context. List paths with the **Apps (with AGENTS.md)** command in the JIT Index above, then read that file for the app you are changing.
 
-- `fizzy/AGENTS.md` - Rails, Solid Queue, SQLite
-- `n8n/AGENTS.md` - Workflow automation, PostgreSQL
-- `openclaw/AGENTS.md` - Gateway service, GOG
-- `terraform/AGENTS.md` - GCS buckets, IAM
+- **OpenClaw** (`openclaw/`): gateway at `https://openclaw.tifan.me`; see [openclaw/AGENTS.md](openclaw/AGENTS.md). TLS: certbot workflow input `openclaw`.
