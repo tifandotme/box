@@ -1,30 +1,30 @@
 # Box
 
-Infrastructure monorepo managing containerized app deployments on a private VPS using Kamal v2. Use the JIT Index below to discover current apps and structure.
+Infra monorepo for containerized app deploys on private VPS with Kamal v2. Use JIT Index to find current apps and structure.
 
 ## Universal Commands
 
-All commands use [mise](https://mise.jdx.dev/) from the repo root. Run `mise tasks` to list what is available. Task names and scripts live in `mise.toml` and `.mise/tasks/`.
+Use [mise](https://mise.jdx.dev/) from repo root. Run `mise tasks` to list tasks. Scripts live in `mise.toml` and `.mise/tasks/`.
 
-**Never run deployment commands** (`mise run deploy`, `mise run app:remove`, or anything that changes production). Leave those to the user.
+**Never run deployment commands** (`mise run deploy`, `mise run app:remove`, or anything that changes production). Leave to user.
 
 ## Secrets & Environment
 
-- Secrets managed via [dotenvx](https://dotenvx.com/) with `DOTENV_PRIVATE_KEY`
-- Each app directory has its own `.env` file (encrypted)
-- Never commit unencrypted secrets; use dotenvx for all env operations
+- Secrets via [dotenvx](https://dotenvx.com/) with `DOTENV_PRIVATE_KEY`
+- Each app dir has encrypted `.env`
+- Never commit unencrypted secrets; use dotenvx for all env ops
 
 ## Deployment Server
 
-- Host: `box.javanese-pound.ts.net` (Tailscale network)
+- Host: `box.javanese-pound.ts.net` (Tailscale)
 - SSH user: `eddies`
-- Remote builder enabled (builds happen on server)
+- Remote builder on (builds happen on server)
 
-**SSH:** Use the box when that is the fastest way to debug (logs, `docker`/`kamal` state, port checks, file layout). With Tailscale up: `ssh eddies@box.javanese-pound.ts.net`. Read-only inspection is the default. Before any command that **writes** or **mutates** the host or workloads (edits, installs, restarts, `docker` commands that change state, etc.), confirm with the user first.
+**SSH:** Use box when fastest for debug (logs, `docker`/`kamal` state, port checks, file layout). With Tailscale up: `ssh eddies@box.javanese-pound.ts.net`. Read-only inspection default. Before any command that **writes** or **mutates** host/workloads (edits, installs, restarts, `docker` commands that change state, etc.), confirm with user first.
 
 ## GitHub Actions
 
-Workflows live in [.github/workflows/](.github/workflows/). List files with the **GitHub workflows** command in the JIT Index below.
+Workflows live in [.github/workflows/](.github/workflows/). List files with **GitHub workflows** command in JIT Index below.
 
 ## JIT Index
 
@@ -40,6 +40,6 @@ Commands (repo root):
 
 ## Per-App Details
 
-Each app may have an `AGENTS.md` for stack-specific context. List paths with the **Apps (with AGENTS.md)** command in the JIT Index above, then read that file for the app you are changing.
+Each app may have an `AGENTS.md` with stack-specific context. List paths with **Apps (with AGENTS.md)** command in JIT Index above, then read that file for app you change.
 
 - **OpenClaw** (`openclaw/`): gateway at `https://openclaw.tifan.me`; see [openclaw/AGENTS.md](openclaw/AGENTS.md). TLS: certbot workflow input `openclaw`.

@@ -1,32 +1,32 @@
 # Terraform
 
-Provisions GCS buckets and IAM for app backups. State stored locally (not remote).
+Provisions GCS buckets and IAM for app backups. State stays local, not remote.
 
 ## Commands
 
-| Task        | Command                |
-| ----------- | ---------------------- |
-| Validate    | `mise run check`       |
+| Task | Command |
+| ---- | ------- |
+| Validate | `mise run check` |
 | Set project | `mise run set-project` |
-| Plan        | `terraform plan`       |
-| Apply       | `terraform apply`      |
+| Plan | `terraform plan` |
+| Apply | `terraform apply` |
 
 ## Key Patterns
 
-- **State**: Local (not remote) — `terraform.tfstate` in repo
+- **State**: Local (`terraform.tfstate` in repo)
 - **Purpose**: GCS buckets for app backups, IAM service account for GitHub Actions
-- **Secrets**: All vars via `.env` (dotenvx encrypted)
-- **Integration**: Service account key → `setup-gcloud` action for `gsutil` auth
+- **Secrets**: Vars via `.env` (dotenvx encrypted)
+- **Integration**: Service account key -> `setup-gcloud` action for `gsutil` auth
 
 ## JIT Index
 
-| Find              | Command                   |
-| ----------------- | ------------------------- |
-| All .tf files     | `ls *.tf`                 |
-| Variables defined | `cat variables.tf`        |
+| Find | Command |
+| ---- | ------- |
+| All .tf files | `ls *.tf` |
+| Variables defined | `cat variables.tf` |
 | Resources created | `rg "^resource " main.tf` |
-| Outputs           | `cat outputs.tf`          |
-| Mise tasks        | `cat mise.toml`           |
+| Outputs | `cat outputs.tf` |
+| Mise tasks | `cat mise.toml` |
 
 ## n8n Sub-module
 

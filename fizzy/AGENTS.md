@@ -1,25 +1,25 @@
 # Fizzy
 
-[Fizzy](https://github.com/tifandotme/fizzy) is a Rails app deployed via Kamal. Uses Solid Queue for background jobs, SQLite for data, and file storage mounted at `/rails/storage`.
+[Fizzy](https://github.com/tifandotme/fizzy) is Rails app via Kamal. Uses Solid Queue for jobs, SQLite for data, and storage at `/rails/storage`.
 
 ## Local Tasks
 
-| Task          | Command                                       |
-| ------------- | --------------------------------------------- |
-| Deploy        | `cd .. && mise run deploy fizzy`              |
-| Rails console | `kamal console` (alias defined in deploy.yml) |
-| DB console    | `kamal dbc` (alias)                           |
-| Queue health  | `mise run queue-health`                       |
-| Queue details | `mise run queue-details`                      |
+| Task | Command |
+| ---- | ------- |
+| Deploy | `cd .. && mise run deploy fizzy` |
+| Rails console | `kamal console` (alias in deploy.yml) |
+| DB console | `kamal dbc` (alias) |
+| Queue health | `mise run queue-health` |
+| Queue details | `mise run queue-details` |
 
 ## Key Patterns
 
 - **Host**: `fizzy.tifan.me`
 - **Healthcheck**: `GET /up` every 30s
-- **Memory**: 1g limit, `WEB_CONCURRENCY=1` for single-worker mode
+- **Memory**: `1g` limit, `WEB_CONCURRENCY=1`
 - **Volume**: `/home/eddies/fizzy-storage` → `/rails/storage`
-- **Jobs**: Solid Queue runs in Puma (no separate worker)
-- **Database**: SQLite (file-based, persisted in volume)
+- **Jobs**: Solid Queue runs in Puma, no separate worker
+- **Database**: SQLite file in volume
 
 ## Backup & Restore
 
@@ -27,12 +27,12 @@ Automated via GitHub Actions (see root AGENTS.md). Workflow: stop → rsync volu
 
 ## JIT Index
 
-| Find          | Command                                      |
-| ------------- | -------------------------------------------- |
-| Mise tasks    | `cat mise.toml`                              |
-| Deploy config | `cat config/deploy.yml`                      |
-| All env vars  | `rg -N "(clear\|secret):" config/deploy.yml` |
-| Secrets list  | `rg -A 10 "secret:" config/deploy.yml`       |
+| Find | Command |
+| ---- | ------- |
+| Mise tasks | `cat mise.toml` |
+| Deploy config | `cat config/deploy.yml` |
+| All env vars | `rg -N "(clear\|secret):" config/deploy.yml` |
+| Secrets list | `rg -A 10 "secret:" config/deploy.yml` |
 
 ## Common Commands
 
