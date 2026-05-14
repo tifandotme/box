@@ -20,6 +20,8 @@ All commands use [mise](https://mise.jdx.dev/) from the repo root. Run `mise tas
 - SSH user: `eddies`
 - Remote builder enabled (builds happen on server)
 
+**SSH:** Use the box when that is the fastest way to debug (logs, `docker`/`kamal` state, port checks, file layout). With Tailscale up: `ssh eddies@box.javanese-pound.ts.net`. Read-only inspection is the default. Before any command that **writes** or **mutates** the host or workloads (edits, installs, restarts, `docker` commands that change state, etc.), confirm with the user first.
+
 ## GitHub Actions
 
 Workflows live in [.github/workflows/](.github/workflows/). List files with the **GitHub workflows** command in the JIT Index below.
