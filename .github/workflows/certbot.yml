@@ -9,7 +9,6 @@ on:
         default: "n8n"
         type: choice
         options:
-          - fizzy
           - n8n
           - openclaw
 
