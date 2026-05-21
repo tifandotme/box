@@ -1,5 +1,5 @@
-ARG VERSION
-ARG IMAGE
+ARG VERSION=latest
+ARG IMAGE=ghcr.io/openclaw/openclaw
 FROM ${IMAGE}:${VERSION}
 
 ARG SERVICE_NAME
