@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+#MISE description="Run ctop on the server with mosh"
+
+set -Eeuo pipefail
+
+mosh eddies@box.javanese-pound.ts.net -- \
+  env TERM=xterm-256color /home/linuxbrew/.linuxbrew/bin/ctop
