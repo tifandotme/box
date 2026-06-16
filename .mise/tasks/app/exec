@@ -3,9 +3,36 @@
 #MISE description="Execute a shell in the specified directory's app container using Kamal"
 
 #USAGE arg "<dir>" help="Directory to exec into"
+#USAGE arg "[command]" help="Command to execute instead of opening a shell" var=#true
 
 set -e
 
+shell_quote() {
+  local value=${1//\'/\'\\\'\'}
+  printf "'%s'" "$value"
+}
+
 cd "${usage_dir?}"
 
-dotenvx run -- kamal app exec --interactive --reuse "bash"
+interactive_args=()
+if [[ -z ${usage_command:-} ]]; then
+  interactive_args=(--interactive)
+fi
+
+exec_command=${usage_command:-bash}
+
+case "$(basename "$PWD")" in
+  hermes)
+    # Expanded inside the container shell, not by this local script.
+    # shellcheck disable=SC2016
+    hermes_prelude='export HERMES_HOME=/opt/data PATH=/opt/hermes/.venv/bin:$PATH; cd "$HERMES_HOME"'
+    if [[ -n ${usage_command:-} ]]; then
+      hermes_command="$hermes_prelude; ${usage_command}"
+    else
+      hermes_command="$hermes_prelude; exec bash -i"
+    fi
+    exec_command="su -s /bin/bash hermes -c $(shell_quote "$hermes_command")"
+    ;;
+esac
+
+dotenvx run -- kamal app exec "${interactive_args[@]}" --reuse "$exec_command"

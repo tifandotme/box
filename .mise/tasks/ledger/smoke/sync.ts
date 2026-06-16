@@ -60,16 +60,21 @@ function incomingNodeNames(connections: Json, targetName: string): string[] {
 }
 
 function smokeActualImportCode(productionCode: string): string {
-  const needle = "await api.importTransactions(accountId, transactions);"
-  if (!productionCode.includes(needle)) {
+  const directImportNeedle = "await api.importTransactions(accountId, transactions);"
+  const retryingImportNeedle =
+    'await withActualRetry("actual_import", () => api.importTransactions(accountId, transactions));'
+  const importNeedle = productionCode.includes(retryingImportNeedle) ? retryingImportNeedle : directImportNeedle
+
+  if (!productionCode.includes(importNeedle)) {
     throw new Error("Could not find production Actual import call to replace with dry-run import")
   }
 
+  const dryRunReplacement = productionCode.includes(retryingImportNeedle)
+    ? 'const dryRunResult = await withActualRetry("actual_import", () => api.importTransactions(accountId, transactions, { dryRun: true, reimportDeleted: false }));\n        const dryRunErrors = Array.isArray(dryRunResult?.errors) ? dryRunResult.errors : [];\n        if (dryRunErrors.length > 0) {\n          throw new Error(`Actual dry-run errors for account ${accountId}: ${JSON.stringify(dryRunErrors)}`);\n        }'
+    : "const dryRunResult = await api.importTransactions(accountId, transactions, { dryRun: true, reimportDeleted: false });\n        const dryRunErrors = Array.isArray(dryRunResult?.errors) ? dryRunResult.errors : [];\n        if (dryRunErrors.length > 0) {\n          throw new Error(`Actual dry-run errors for account ${accountId}: ${JSON.stringify(dryRunErrors)}`);\n        }"
+
   return productionCode
-    .replace(
-      needle,
-      "const dryRunResult = await api.importTransactions(accountId, transactions, { dryRun: true, reimportDeleted: false });\n        const dryRunErrors = Array.isArray(dryRunResult?.errors) ? dryRunResult.errors : [];\n        if (dryRunErrors.length > 0) {\n          throw new Error(`Actual dry-run errors for account ${accountId}: ${JSON.stringify(dryRunErrors)}`);\n        }",
-    )
+    .replace(importNeedle, dryRunReplacement)
     .replace(
       'status: "imported",',
       'status: "imported",\n              smoke_status: "passed",\n              actual_dry_run: true,\n              actual_dry_run_added: dryRunResult?.added?.length ?? dryRunResult?.added ?? 0,\n              actual_dry_run_updated: dryRunResult?.updated?.length ?? dryRunResult?.updated ?? 0,',
