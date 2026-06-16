@@ -58,6 +58,8 @@ builder:
     IMAGE: <%= ENV.fetch("IMAGE") %>
     VERSION: <%= ENV.fetch("VERSION", "latest") %>
     SERVICE_NAME: <%= ENV.fetch("SERVICE_NAME", File.basename(File.expand_path("..", __FILE__))) %>
+    HERMES_UID: 1001
+    HERMES_GID: 1001
 
 deploy_timeout: 180
 drain_timeout: 30
