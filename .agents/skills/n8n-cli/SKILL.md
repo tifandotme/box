@@ -6,7 +6,6 @@ allowed-tools: Bash(n8n-cli:*), Bash(echo:*), Bash(cat:*), Read, Write
 
 # n8n CLI
 
-The `n8n-cli` command-line tool manages an n8n instance via its REST API.
 It auto-detects piped output and switches to JSON, making it composable for scripts and LLM tool use.
 
 ## Setup

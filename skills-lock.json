@@ -1,10 +1,59 @@
 {
   "version": 1,
   "skills": {
-    "n8n-cli": {
-      "source": "n8n-io/n8n",
+    "gws-gmail": {
+      "source": "googleworkspace/cli",
       "sourceType": "github",
-      "computedHash": "ac5aa9079498c3a8346811a3c279d1677b5974d3a10ecd0ae6ee38180a222622"
+      "skillPath": "skills/gws-gmail/SKILL.md",
+      "computedHash": "5e5b5fdb4b4f347310d929657ed773abcaf528b5ac0a68deee12d3d38d307642"
+    },
+    "gws-gmail-forward": {
+      "source": "googleworkspace/cli",
+      "sourceType": "github",
+      "skillPath": "skills/gws-gmail-forward/SKILL.md",
+      "computedHash": "53790c38df818d91e3e214d80c016b50c67489a57d0e1764f1bcc2c31e754db8"
+    },
+    "gws-gmail-read": {
+      "source": "googleworkspace/cli",
+      "sourceType": "github",
+      "skillPath": "skills/gws-gmail-read/SKILL.md",
+      "computedHash": "fb90ad1652e456d953e8d2094bffa955df171e362c7d31590797ec9ca84b3727"
+    },
+    "gws-gmail-reply": {
+      "source": "googleworkspace/cli",
+      "sourceType": "github",
+      "skillPath": "skills/gws-gmail-reply/SKILL.md",
+      "computedHash": "908f72d3f5a7e9e53f4ecb3cfad6e146a0798aa55ba684629796baddbe5e766a"
+    },
+    "gws-gmail-reply-all": {
+      "source": "googleworkspace/cli",
+      "sourceType": "github",
+      "skillPath": "skills/gws-gmail-reply-all/SKILL.md",
+      "computedHash": "2d848bf4503a1eaeca2051c51e107cc5a1c3ce2e7b772bddc86e3600c69084ab"
+    },
+    "gws-gmail-send": {
+      "source": "googleworkspace/cli",
+      "sourceType": "github",
+      "skillPath": "skills/gws-gmail-send/SKILL.md",
+      "computedHash": "87f48e0c57b05e143b9e206e9fd17585bcc7bfc3cf16e2bdd889c250e5eb8d34"
+    },
+    "gws-gmail-triage": {
+      "source": "googleworkspace/cli",
+      "sourceType": "github",
+      "skillPath": "skills/gws-gmail-triage/SKILL.md",
+      "computedHash": "404d060677fd09d2ddb4c4008817b430114a60a97e99cd94cf1308ec9b26db97"
+    },
+    "gws-gmail-watch": {
+      "source": "googleworkspace/cli",
+      "sourceType": "github",
+      "skillPath": "skills/gws-gmail-watch/SKILL.md",
+      "computedHash": "ecba93f87ac43d64f154e337c3a6be2139fc4a2e78263b880169ce220398f4c7"
+    },
+    "gws-shared": {
+      "source": "googleworkspace/cli",
+      "sourceType": "github",
+      "skillPath": "skills/gws-shared/SKILL.md",
+      "computedHash": "b197590681ce3d5a52e9c15a68652b5445d111dbfc0dc453f68fb0785aac443c"
     }
   }
 }
