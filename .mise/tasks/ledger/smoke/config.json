@@ -1,0 +1,12 @@
+{
+  "productionWorkflowId": "IJraHEgAK54QfTmYhaWD4",
+  "productionWorkflowName": "Ledger",
+  "productionWorkflowUrl": "https://n8n.tifan.me/workflow/IJraHEgAK54QfTmYhaWD4",
+  "smokeWorkflowName": "Ledger Smoke Test",
+  "fixtureLabel": "ledger-fixture",
+  "fixtureLabelId": "Label_17",
+  "fixtureLimitPerBranch": 10,
+  "n8nBaseUrl": "https://n8n.tifan.me",
+  "webhookPath": "ledger-smoke-test",
+  "smokeWorkflowId": "oDaHNq5wyitzZLt6"
+}

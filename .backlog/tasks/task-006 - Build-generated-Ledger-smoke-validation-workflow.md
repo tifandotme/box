@@ -1,10 +1,11 @@
 ---
 id: TASK-006
 title: Build generated Ledger smoke validation workflow
-status: To Do
-assignee: []
+status: Done
+assignee:
+  - '@tifan'
 created_date: '2026-06-16 08:53'
-updated_date: '2026-06-16 08:54'
+updated_date: '2026-06-16 09:09'
 labels:
   - ledger
   - n8n
@@ -32,12 +33,12 @@ Create a repeatable validation path for Ledger workflow changes. The default pat
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Generated Ledger Smoke Test workflow is derived from the production Ledger workflow, not manually maintained as a fork.
-- [ ] #2 Smoke workflow runs in n8n and creates inspectable execution records.
-- [ ] #3 Smoke workflow reads live Gmail fixture emails but does not mutate Gmail labels/read state.
-- [ ] #4 Smoke workflow uses Actual importTransactions with dryRun: true and fails on returned import errors.
-- [ ] #5 Smoke workflow replaces Telegram sends with assertions or captured diagnostics.
-- [ ] #6 Mise tasks exist for sync, run, inspect, and canary workflows.
+- [x] #1 Generated Ledger Smoke Test workflow is derived from the production Ledger workflow, not manually maintained as a fork.
+- [x] #2 Smoke workflow runs in n8n and creates inspectable execution records.
+- [x] #3 Smoke workflow reads live Gmail fixture emails but does not mutate Gmail labels/read state.
+- [x] #4 Smoke workflow uses Actual importTransactions with dryRun: true and fails on returned import errors.
+- [x] #5 Smoke workflow replaces Telegram sends with assertions or captured diagnostics.
+- [x] #6 Mise tasks exist for sync, run, inspect, and canary workflows.
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -53,3 +54,15 @@ Create a repeatable validation path for Ledger workflow changes. The default pat
 8. Document the validation commands in root AGENTS.md and keep Ledger-specific gotchas in n8n/AGENTS.md.
 9. Run the safe lint/static checks first; only run smoke/canary commands with explicit user approval because they access Gmail or mutate production state.
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Implemented all four subtasks. Ran ledger:smoke:sync with approval, creating/updating active smoke workflow oDaHNq5wyitzZLt6. Ran smoke with approval; execution 13147 created and inspect failed as intended because no messages are currently labeled ledger-fixture. Created Gmail label ledger-fixture (Label_17) with approval.
+<!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+Implemented generated Ledger smoke validation and canary tooling. The sync task derives Ledger Smoke Test from live production Ledger, converts Gmail triggers into read-only fixture fetches, enforces Actual dry-run import, blocks Gmail/Telegram mutations, updates and activates n8n workflow oDaHNq5wyitzZLt6, and records the smoke workflow ID. Added run, inspect, and canary mise tasks plus agent docs. Smoke execution 13147 is inspectable and currently fails only because fixture coverage is zero until read fixture emails are labeled ledger-fixture.
+<!-- SECTION:FINAL_SUMMARY:END -->

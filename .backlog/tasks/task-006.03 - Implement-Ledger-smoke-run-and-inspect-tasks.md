@@ -1,10 +1,11 @@
 ---
 id: TASK-006.03
 title: Implement Ledger smoke run and inspect tasks
-status: To Do
-assignee: []
+status: Done
+assignee:
+  - '@tifan'
 created_date: '2026-06-16 08:54'
-updated_date: '2026-06-16 08:54'
+updated_date: '2026-06-16 09:09'
 labels:
   - ledger
   - n8n
@@ -27,10 +28,10 @@ Provide separate commands to trigger the generated smoke workflow and validate t
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Run task calls the secured smoke webhook and prints enough context to open the workflow or execution in n8n.
-- [ ] #2 Inspect task fetches the latest Ledger Smoke Test execution with data.
-- [ ] #3 Inspect task fails if any production branch has zero fixture coverage.
-- [ ] #4 Inspect task fails if Actual dry-run import returns errors or if fixture assertions fail.
+- [x] #1 Run task calls the secured smoke webhook and prints enough context to open the workflow or execution in n8n.
+- [x] #2 Inspect task fetches the latest Ledger Smoke Test execution with data.
+- [x] #3 Inspect task fails if any production branch has zero fixture coverage.
+- [x] #4 Inspect task fails if Actual dry-run import returns errors or if fixture assertions fail.
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -43,3 +44,15 @@ Provide separate commands to trigger the generated smoke workflow and validate t
 5. Fail with concise diagnostics if any branch has zero fixtures, any fixture failed, any Actual dry-run result has errors, or the execution status is not successful.
 6. Keep run and inspect separate; do not add a combined default command.
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Implemented smoke run and inspect tasks. Ran smoke workflow execution 13147; inspect correctly failed because all branches currently have zero ledger-fixture messages.
+<!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+Added separate ledger:smoke:run and ledger:smoke:inspect tasks. Run triggers the smoke webhook and prints workflow/execution context. Inspect fetches the latest execution with data and fails on zero branch coverage, Actual dry-run/import errors, fixture assertion failures, and non-success node status. Validation run reached execution 13147 and failed as expected because no fixture emails are labeled yet.
+<!-- SECTION:FINAL_SUMMARY:END -->

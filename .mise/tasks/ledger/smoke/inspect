@@ -1,0 +1,96 @@
+#!/usr/bin/env bun
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+
+const taskDir = path.dirname(Bun.main);
+const config = JSON.parse(await readFile(path.join(taskDir, "config.json"), "utf8"));
+
+function run(command: string[]): string {
+  const proc = Bun.spawnSync(command, { stdout: "pipe", stderr: "pipe" });
+  const stdout = new TextDecoder().decode(proc.stdout).trim();
+  const stderr = new TextDecoder().decode(proc.stderr).trim();
+  if (!proc.success) throw new Error(`${command.join(" ")} failed${stderr ? `\n${stderr}` : ""}`);
+  return stdout;
+}
+
+function nodeItems(runData: any, nodeName: string): any[] {
+  const runs = runData?.[nodeName] ?? [];
+  return runs.flatMap((run: any) => (run.data?.main ?? []).flatMap((output: any[]) => output ?? []));
+}
+
+function nodeStatuses(runData: any, nodeName: string): string[] {
+  return (runData?.[nodeName] ?? []).map((run: any) => run.executionStatus).filter(Boolean);
+}
+
+if (!config.smokeWorkflowId) {
+  console.error("Missing smokeWorkflowId in .mise/tasks/ledger/smoke/config.json. Run: mise run ledger:smoke:sync");
+  process.exit(1);
+}
+
+try {
+  const executions = JSON.parse(run(["n8n-cli", "execution", "list", "--workflow", config.smokeWorkflowId, "--limit", "10", "--json"]));
+  const latest = executions?.[0];
+  if (!latest) throw new Error(`No executions found for ${config.smokeWorkflowName} (${config.smokeWorkflowId})`);
+
+  const execution = JSON.parse(run(["n8n-cli", "execution", "get", String(latest.id), "--include-data", "--json"]));
+  const runData = execution.data?.resultData?.runData ?? {};
+  const workflowNodes = execution.workflowData?.nodes ?? [];
+  const branchNodes = workflowNodes
+    .filter((node: any) => node.name?.startsWith("Trigger: Gmail ") && node.type === "n8n-nodes-base.gmail")
+    .map((node: any) => node.name)
+    .sort();
+
+  const failures: string[] = [];
+  const branchCounts: Record<string, number> = {};
+
+  if (!execution.finished || execution.status !== "success") {
+    failures.push(`Execution ${execution.id} status is ${execution.status}, finished=${execution.finished}`);
+  }
+
+  for (const branch of branchNodes) {
+    const count = nodeItems(runData, branch).length;
+    branchCounts[branch] = count;
+    if (count === 0) failures.push(`${branch} had zero fixture coverage`);
+    const statuses = nodeStatuses(runData, branch);
+    if (statuses.some((status) => status !== "success")) failures.push(`${branch} statuses: ${statuses.join(", ")}`);
+  }
+
+  const importItems = nodeItems(runData, "Import: Actual Transactions");
+  for (const item of importItems) {
+    const json = item.json ?? {};
+    if (json.status === "error" || json.smoke_status === "failed" || json.error) {
+      failures.push(`Actual dry-run/import assertion failed for ${json.imported_id ?? json.id ?? "unknown"}: ${json.error ?? JSON.stringify(json)}`);
+    }
+    if (json.actual_dry_run === false) failures.push(`Actual import item was not marked dry-run: ${json.imported_id ?? json.id ?? "unknown"}`);
+  }
+
+  for (const [nodeName, runs] of Object.entries(runData)) {
+    for (const run of runs as any[]) {
+      if (run.executionStatus && run.executionStatus !== "success") failures.push(`${nodeName} executionStatus=${run.executionStatus}`);
+      const items = (run.data?.main ?? []).flatMap((output: any[]) => output ?? []);
+      for (const item of items) {
+        const json = item.json ?? {};
+        if (json.smoke_status === "failed" || json.status === "error") {
+          failures.push(`${nodeName} fixture assertion failed for ${json.imported_id ?? json.id ?? "unknown"}: ${json.error ?? json.smoke_replacement ?? "unknown error"}`);
+        }
+      }
+    }
+  }
+
+  console.log(`Execution: ${config.n8nBaseUrl.replace(/\/$/, "")}/execution/${execution.id}`);
+  console.log(`Workflow: ${config.n8nBaseUrl.replace(/\/$/, "")}/workflow/${config.smokeWorkflowId}`);
+  console.log("Branch fixture counts:");
+  for (const [branch, count] of Object.entries(branchCounts)) console.log(`- ${branch}: ${count}`);
+  console.log(`Actual dry-run output items: ${importItems.length}`);
+
+  if (failures.length > 0) {
+    console.error("Smoke validation failed:");
+    for (const failure of [...new Set(failures)]) console.error(`- ${failure}`);
+    process.exit(1);
+  }
+
+  console.log("Smoke validation passed.");
+} catch (error) {
+  console.error(error instanceof Error ? error.message : error);
+  process.exit(1);
+}

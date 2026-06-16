@@ -1,0 +1,38 @@
+#!/usr/bin/env bun
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+
+const taskDir = path.dirname(Bun.main);
+const config = JSON.parse(await readFile(path.join(taskDir, "config.json"), "utf8"));
+
+if (!config.smokeWorkflowId) {
+  console.error("Missing smokeWorkflowId in .mise/tasks/ledger/smoke/config.json. Run: mise run ledger:smoke:sync");
+  process.exit(1);
+}
+
+const webhookUrl = `${config.n8nBaseUrl.replace(/\/$/, "")}/webhook/${config.webhookPath}`;
+const workflowUrl = `${config.n8nBaseUrl.replace(/\/$/, "")}/workflow/${config.smokeWorkflowId}`;
+
+console.log(`Triggering ${config.smokeWorkflowName}`);
+console.log(`Workflow: ${workflowUrl}`);
+console.log(`Webhook: ${webhookUrl}`);
+
+const response = await fetch(webhookUrl, {
+  method: "POST",
+  headers: { "content-type": "application/json" },
+  body: JSON.stringify({ source: "mise ledger:smoke:run", requestedAt: new Date().toISOString() }),
+});
+
+const text = await response.text();
+console.log(`HTTP ${response.status} ${response.statusText}`);
+if (text.trim()) console.log(text.trim());
+
+console.log("Latest executions:");
+const proc = Bun.spawnSync(["n8n-cli", "execution", "list", "--workflow", config.smokeWorkflowId, "--limit", "5", "--json"], {
+  stdout: "pipe",
+  stderr: "pipe",
+});
+process.stdout.write(proc.stdout);
+process.stderr.write(proc.stderr);
+if (!response.ok || !proc.success) process.exit(1);
+console.log("Inspect with: mise run ledger:smoke:inspect");

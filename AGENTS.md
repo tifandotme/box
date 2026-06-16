@@ -38,6 +38,18 @@ Commands (repo root):
 - **Encrypted env files:** `ls */.env .env 2>/dev/null`
 - **Terraform resources:** `ls terraform/*.tf n8n/terraform/*.tf 2>/dev/null`
 
+## Ledger validation
+
+After changing the Ledger n8n workflow, run these commands from the repo root:
+
+```bash
+mise run ledger:smoke:sync
+mise run ledger:smoke:run
+mise run ledger:smoke:inspect
+```
+
+`mise run ledger:canary` is production-mutating. It can change Gmail read state, write Actual transactions, send Telegram messages, and create production n8n executions. Do not run it as automatic validation.
+
 ## Per-App Details
 
 Each app may have an `AGENTS.md` with stack-specific context. List paths with **Apps (with AGENTS.md)** command in JIT Index above, then read that file for app you change.
