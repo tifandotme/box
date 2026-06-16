@@ -16,6 +16,6 @@ if ! command -v setfacl >/dev/null 2>&1; then
 fi
 
 sudo mkdir -p "$STORAGE_PATH"
-sudo setfacl -R -m u:eddies:rwX "$STORAGE_PATH"
-sudo setfacl -d -m u:eddies:rwX "$STORAGE_PATH"
+sudo setfacl -R -m u:eddies:rwX,m:rwX "$STORAGE_PATH"
+sudo setfacl -d -m u:eddies:rwX,m:rwX "$STORAGE_PATH"
 REMOTE
