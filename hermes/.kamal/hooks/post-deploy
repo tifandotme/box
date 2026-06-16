@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+host="eddies@box.javanese-pound.ts.net"
+storage_path="/home/eddies/hermes-storage"
+
+# STORAGE_PATH is intentionally quoted locally before being passed to SSH.
+# shellcheck disable=SC2029
+ssh "$host" "STORAGE_PATH=$(printf '%q' "$storage_path") bash -s" <<'REMOTE'
+set -Eeuo pipefail
+
+if ! command -v setfacl >/dev/null 2>&1; then
+  printf 'setfacl is not installed on the host. Install it with: sudo apt-get install -y acl\n' >&2
+  exit 1
+fi
+
+sudo mkdir -p "$STORAGE_PATH"
+sudo setfacl -R -m u:eddies:rwX "$STORAGE_PATH"
+sudo setfacl -d -m u:eddies:rwX "$STORAGE_PATH"
+REMOTE
