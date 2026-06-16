@@ -6,8 +6,8 @@
 
 - **Host**: `https://hermes.tifan.me`
 - **Port (container)**: 9119 dashboard (`proxy.app_port` in `config/deploy.yml`)
-- **Healthcheck**: `GET /health`
-- **Volume**: `/home/eddies/hermes-storage` → `/opt/data`
+- **Healthcheck**: `GET /api/status`
+- **Volume**: `/home/eddies/hermes-storage` → `/opt/data` (container-owned by Hermes' default UID)
 - **Secrets**: `hermes/.env` stores dashboard auth secrets with dotenvx. Registry and TLS use root `.env` plus `hermes/.kamal/secrets`.
 
 ## Security
