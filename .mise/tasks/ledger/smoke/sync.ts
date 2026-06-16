@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+//MISE description="Create or update the non-mutating Ledger smoke workflow"
 import { randomUUID } from "node:crypto"
 import { readFile, writeFile } from "node:fs/promises"
 import path from "node:path"

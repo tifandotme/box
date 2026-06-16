@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+//MISE description="Inspect the latest Ledger smoke execution for failures"
 import { readFile } from "node:fs/promises"
 import path from "node:path"
 

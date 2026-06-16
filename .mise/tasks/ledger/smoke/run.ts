@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+//MISE description="Trigger the Ledger smoke workflow and list recent executions"
 import { readFile } from "node:fs/promises"
 import path from "node:path"
 

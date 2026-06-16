@@ -11,5 +11,5 @@
     "verbatimModuleSyntax": true,
     "skipLibCheck": true
   },
-  "include": ["tmp/bun-tasks/**/*.ts"]
+  "include": [".mise/tasks/**/*.ts"]
 }

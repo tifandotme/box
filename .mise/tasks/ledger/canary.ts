@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+//MISE description="Run a production Ledger canary from one selected Gmail fixture"
 import { readFile } from "node:fs/promises"
 import path from "node:path"
 
