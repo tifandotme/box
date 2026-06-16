@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+#MISE description="Diff local n8n-cli skill against upstream n8n master"
+
+set -euo pipefail
+
+readonly LOCAL_FILE=".agents/skills/n8n-cli/SKILL.md"
+readonly REMOTE_PATH="repos/n8n-io/n8n/contents/packages/%40n8n/cli/skills/n8n-cli/SKILL.md?ref=master"
+
+if ! command -v gh >/dev/null 2>&1; then
+  echo "error: gh is required" >&2
+  exit 127
+fi
+
+if [[ ! -f "$LOCAL_FILE" ]]; then
+  echo "error: local skill file not found: $LOCAL_FILE" >&2
+  exit 1
+fi
+
+remote_file="$(mktemp -t n8n-cli-skill-upstream.XXXXXX.md)"
+trap 'rm -f "$remote_file"' EXIT
+
+gh api \
+  -H "Accept: application/vnd.github.raw" \
+  "$REMOTE_PATH" \
+  > "$remote_file"
+
+set +e
+diff -u "$LOCAL_FILE" "$remote_file"
+diff_status=$?
+set -e
+
+case "$diff_status" in
+  0)
+    echo "No upstream differences found."
+    ;;
+  1)
+    echo "Upstream differences found."
+    ;;
+  *)
+    echo "error: diff failed with status $diff_status" >&2
+    exit "$diff_status"
+    ;;
+esac
