@@ -50,5 +50,3 @@ Commands (repo root):
 ## Per-App Details
 
 Each app may have an `AGENTS.md` with stack-specific context. List paths with **Apps (with AGENTS.md)** command in JIT Index above, then read that file for app you change.
-
-- **OpenClaw** (`openclaw/`): gateway at `https://openclaw.tifan.me`; see [openclaw/AGENTS.md](openclaw/AGENTS.md). TLS: certbot workflow input `openclaw`.
