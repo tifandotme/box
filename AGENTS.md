@@ -1,12 +1,20 @@
 # Box
 
-Infra monorepo for containerized app deploys on private VPS with Kamal v2. Use JIT Index to find current apps and structure.
+Personal infra repo for VPS app deploys, n8n automation, and local agent tooling. Use JIT Index to find current apps and structure.
 
 ## Universal Commands
 
 Use [mise](https://mise.jdx.dev/) from repo root. Run `mise tasks` to list tasks. Scripts live in `mise.toml` and `.mise/tasks/`.
 
-**Never run deployment commands** (`mise run deploy`, `mise run app:remove`, or anything that changes production). Leave to user.
+For Bun scripts under `.mise/tasks/`, validate from the repo root:
+
+| Task      | Command             |
+| --------- | ------------------- |
+| Format    | `bun run format`    |
+| Lint      | `bun run lint`      |
+| Typecheck | `bun run typecheck` |
+
+**Never run production-mutating commands** (`mise run deploy`, `mise run app:remove`, n8n workflow updates, Gmail state changes, Actual writes, Telegram sends, Docker/Kamal mutations, or anything similar). Leave them to the user.
 
 ## Secrets & Environment
 
@@ -37,18 +45,7 @@ Commands (repo root):
 - **GitHub workflows:** `ls .github/workflows/*.yml 2>/dev/null`
 - **Encrypted env files:** `ls */.env .env 2>/dev/null`
 - **Terraform resources:** `ls terraform/*.tf n8n/terraform/*.tf 2>/dev/null`
-
-## Ledger validation
-
-After changing the Ledger n8n workflow, run these commands from the repo root:
-
-```bash
-mise run ledger:smoke:sync
-mise run ledger:smoke:run
-mise run ledger:smoke:inspect
-```
-
-`mise run ledger:canary` is production-mutating. It can change Gmail read state, write Actual transactions, send Telegram messages, and create production n8n executions. Do not run it as automatic validation.
+- **Local agent skills:** `find .agents/skills -name SKILL.md | sort`
 
 ## Per-App Details
 
