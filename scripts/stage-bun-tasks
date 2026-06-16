@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+readonly STAGE_DIR="tmp/bun-tasks"
+readonly MODE="${1:-stage}"
+
+find_bun_tasks() {
+  find .mise/tasks -type f -perm -111 -print0 | while IFS= read -r -d '' task; do
+    IFS= read -r first_line < "$task" || true
+    if [[ "$first_line" == '#!'*bun* ]]; then
+      printf '%s\n' "$task"
+    fi
+  done | sort
+}
+
+staged_task_path() {
+  local task="$1"
+  printf '%s/%s.ts\n' "$STAGE_DIR" "${task#.}"
+}
+
+stage_tasks() {
+  rm -rf "$STAGE_DIR"
+
+  find_bun_tasks | while IFS= read -r task; do
+    staged_task="$(staged_task_path "$task")"
+    mkdir -p "$(dirname "$staged_task")"
+    cp "$task" "$staged_task"
+  done
+}
+
+unstage_tasks() {
+  find_bun_tasks | while IFS= read -r task; do
+    cp "$(staged_task_path "$task")" "$task"
+    chmod +x "$task"
+  done
+}
+
+clean_stage() {
+  rm -rf "$STAGE_DIR"
+  rmdir tmp 2>/dev/null || true
+}
+
+case "$MODE" in
+  stage)
+    stage_tasks
+    ;;
+  unstage)
+    unstage_tasks
+    ;;
+  clean)
+    clean_stage
+    ;;
+  *)
+    echo "usage: scripts/stage-bun-tasks [stage|unstage|clean]" >&2
+    exit 2
+    ;;
+esac

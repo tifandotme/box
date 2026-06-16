@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "typecheck": "sh -c 'scripts/stage-bun-tasks && tsc -p tsconfig.bun-tasks.json; status=$?; scripts/stage-bun-tasks clean; exit $status'",
+    "lint": "sh -c 'scripts/stage-bun-tasks && oxlint tmp/bun-tasks; status=$?; scripts/stage-bun-tasks clean; exit $status'",
+    "format": "sh -c 'scripts/stage-bun-tasks && oxfmt --write tmp/bun-tasks && scripts/stage-bun-tasks unstage; status=$?; scripts/stage-bun-tasks clean; exit $status'",
+    "format:check": "sh -c 'scripts/stage-bun-tasks && oxfmt --check tmp/bun-tasks; status=$?; scripts/stage-bun-tasks clean; exit $status'"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.14",
+    "oxfmt": "^0.55.0",
+    "oxlint": "^1.70.0",
+    "typescript": "^6.0.3"
+  }
+}

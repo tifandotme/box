@@ -1,82 +1,114 @@
 #!/usr/bin/env bun
-import { readFile } from "node:fs/promises";
-import path from "node:path";
+import { readFile } from "node:fs/promises"
+import path from "node:path"
 
-const smokeConfigPath = path.join(path.dirname(Bun.main), "smoke", "config.json");
-const config = JSON.parse(await readFile(smokeConfigPath, "utf8"));
+const smokeConfigPath = path.join(path.dirname(Bun.main), "smoke", "config.json")
+const config = JSON.parse(await readFile(smokeConfigPath, "utf8"))
 
 function run(command: string[], input?: string): string {
   const proc = Bun.spawnSync(command, {
     stdin: input ? new TextEncoder().encode(input) : undefined,
     stdout: "pipe",
     stderr: "pipe",
-  });
-  const stdout = new TextDecoder().decode(proc.stdout).trim();
-  const stderr = new TextDecoder().decode(proc.stderr).trim();
-  if (!proc.success) throw new Error(`${command.join(" ")} failed${stderr ? `\n${stderr}` : ""}`);
-  return stdout;
+  })
+  const stdout = new TextDecoder().decode(proc.stdout).trim()
+  const stderr = new TextDecoder().decode(proc.stderr).trim()
+  if (!proc.success) throw new Error(`${command.join(" ")} failed${stderr ? `\n${stderr}` : ""}`)
+  return stdout
 }
 
 function header(message: any, name: string): string {
-  return message.payload?.headers?.find((item: any) => item.name?.toLowerCase() === name.toLowerCase())?.value ?? "";
+  return message.payload?.headers?.find((item: any) => item.name?.toLowerCase() === name.toLowerCase())?.value ?? ""
 }
 
 function formatDate(message: any): string {
-  const ms = Number(message.internalDate);
-  if (!Number.isFinite(ms)) return "unknown-date";
-  return new Intl.DateTimeFormat("sv", { dateStyle: "short", timeStyle: "short", timeZone: "Asia/Jakarta" }).format(new Date(ms));
+  const ms = Number(message.internalDate)
+  if (!Number.isFinite(ms)) return "unknown-date"
+  return new Intl.DateTimeFormat("sv", { dateStyle: "short", timeStyle: "short", timeZone: "Asia/Jakarta" }).format(
+    new Date(ms),
+  )
 }
 
 try {
-  const labels = JSON.parse(run(["gws", "gmail", "users", "labels", "list", "--params", '{"userId":"me"}', "--format", "json"])).labels ?? [];
-  const byName = new Map(labels.map((label: any) => [label.name, label]));
-  const fixtureLabel = byName.get(config.fixtureLabel) as any;
-  if (!fixtureLabel) throw new Error(`Gmail label not found: ${config.fixtureLabel}`);
+  const labels =
+    JSON.parse(run(["gws", "gmail", "users", "labels", "list", "--params", '{"userId":"me"}', "--format", "json"]))
+      .labels ?? []
+  const byName = new Map(labels.map((label: any) => [label.name, label]))
+  const fixtureLabel = byName.get(config.fixtureLabel) as any
+  if (!fixtureLabel) throw new Error(`Gmail label not found: ${config.fixtureLabel}`)
 
-  const sourceLabels = new Map(labels.filter((label: any) => String(label.name).startsWith("ToBudget/")).map((label: any) => [label.id, label.name]));
-  const listParams = JSON.stringify({ userId: "me", labelIds: [fixtureLabel.id], q: "is:read", maxResults: 100 });
-  const listed = JSON.parse(run(["gws", "gmail", "users", "messages", "list", "--params", listParams, "--format", "json"]));
-  const ids = (listed.messages ?? []).map((message: any) => message.id);
-  if (ids.length === 0) throw new Error(`No read Gmail messages found with label ${config.fixtureLabel}`);
+  const sourceLabels = new Map(
+    labels
+      .filter((label: any) => String(label.name).startsWith("ToBudget/"))
+      .map((label: any) => [label.id, label.name]),
+  )
+  const listParams = JSON.stringify({ userId: "me", labelIds: [fixtureLabel.id], q: "is:read", maxResults: 100 })
+  const listed = JSON.parse(
+    run(["gws", "gmail", "users", "messages", "list", "--params", listParams, "--format", "json"]),
+  )
+  const ids = (listed.messages ?? []).map((message: any) => message.id)
+  if (ids.length === 0) throw new Error(`No read Gmail messages found with label ${config.fixtureLabel}`)
 
-  const rows: string[] = [];
+  const rows: string[] = []
   for (const id of ids) {
     const params = JSON.stringify({
       userId: "me",
       id,
       format: "metadata",
       metadataHeaders: ["From", "Subject", "Date"],
-    });
-    const message = JSON.parse(run(["gws", "gmail", "users", "messages", "get", "--params", params, "--format", "json"]));
-    const sources = (message.labelIds ?? []).map((labelId: string) => sourceLabels.get(labelId)).filter(Boolean).join(",") || "unknown";
-    rows.push([sources, formatDate(message), header(message, "From"), header(message, "Subject"), id].join("\t"));
+    })
+    const message = JSON.parse(
+      run(["gws", "gmail", "users", "messages", "get", "--params", params, "--format", "json"]),
+    )
+    const sources =
+      (message.labelIds ?? [])
+        .map((labelId: string) => sourceLabels.get(labelId))
+        .filter(Boolean)
+        .join(",") || "unknown"
+    rows.push([sources, formatDate(message), header(message, "From"), header(message, "Subject"), id].join("\t"))
   }
 
-  console.error("WARNING: ledger:canary mutates production Gmail read state, may write Actual, may send Telegram, and creates production n8n execution records.");
-  console.error("Select exactly one read fixture email to mark unread for the production Ledger workflow.");
+  console.error(
+    "WARNING: ledger:canary mutates production Gmail read state, may write Actual, may send Telegram, and creates production n8n execution records.",
+  )
+  console.error("Select exactly one read fixture email to mark unread for the production Ledger workflow.")
 
   const fzf = Bun.spawnSync(["fzf", "--with-nth=1,2,3,4", "--delimiter=\t", "--prompt=Ledger canary > "], {
     stdin: new TextEncoder().encode(`${rows.join("\n")}\n`),
     stdout: "pipe",
     stderr: "inherit",
-  });
-  if (!fzf.success) process.exit(1);
+  })
+  if (!fzf.success) process.exit(1)
 
-  const selected = new TextDecoder().decode(fzf.stdout).trim();
-  if (!selected) process.exit(1);
-  const messageId = selected.split("\t").at(-1);
-  if (!messageId) throw new Error("Selected row did not include a Gmail message ID");
+  const selected = new TextDecoder().decode(fzf.stdout).trim()
+  if (!selected) process.exit(1)
+  const messageId = selected.split("\t").at(-1)
+  if (!messageId) throw new Error("Selected row did not include a Gmail message ID")
 
-  const modifyParams = JSON.stringify({ userId: "me", id: messageId });
-  run(["gws", "gmail", "users", "messages", "modify", "--params", modifyParams, "--json", '{"addLabelIds":["UNREAD"]}', "--format", "json"]);
+  const modifyParams = JSON.stringify({ userId: "me", id: messageId })
+  run([
+    "gws",
+    "gmail",
+    "users",
+    "messages",
+    "modify",
+    "--params",
+    modifyParams,
+    "--json",
+    '{"addLabelIds":["UNREAD"]}',
+    "--format",
+    "json",
+  ])
 
-  console.log(`Marked unread: ${messageId}`);
-  console.log(`Production Ledger: ${config.productionWorkflowUrl}`);
-  console.log("Production Ledger is trigger-based. If it does not pick up the message automatically, open the workflow and inspect trigger/execution state.");
-  console.log("Follow-up inspection commands:");
-  console.log(`n8n-cli execution list --workflow=${config.productionWorkflowId} --limit=10 --json`);
-  console.log("n8n-cli execution get <execution-id> --include-data --json");
+  console.log(`Marked unread: ${messageId}`)
+  console.log(`Production Ledger: ${config.productionWorkflowUrl}`)
+  console.log(
+    "Production Ledger is trigger-based. If it does not pick up the message automatically, open the workflow and inspect trigger/execution state.",
+  )
+  console.log("Follow-up inspection commands:")
+  console.log(`n8n-cli execution list --workflow=${config.productionWorkflowId} --limit=10 --json`)
+  console.log("n8n-cli execution get <execution-id> --include-data --json")
 } catch (error) {
-  console.error(error instanceof Error ? error.message : error);
-  process.exit(1);
+  console.error(error instanceof Error ? error.message : error)
+  process.exit(1)
 }
