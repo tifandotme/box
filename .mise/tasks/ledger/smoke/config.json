@@ -5,7 +5,7 @@
   "smokeWorkflowName": "Ledger Smoke Test",
   "fixtureLabel": "ledger-fixture",
   "fixtureLabelId": "Label_17",
-  "fixtureLimitPerBranch": 10,
+  "fixtureLimitPerBranch": 20,
   "n8nBaseUrl": "https://n8n.tifan.me",
   "webhookPath": "ledger-smoke-test",
   "smokeWorkflowId": "oDaHNq5wyitzZLt6"
