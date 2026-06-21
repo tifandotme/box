@@ -55,9 +55,27 @@ n8n-cli workflow update IJraHEgAK54QfTmYhaWD4 \
   --file .backups/n8n/ledger-YYYYMMDD-HHMMSS.json
 ```
 
+## Draft Workflow Changes
+
+Use a draft JSON before mutating production:
+
+```bash
+mise run ledger:smoke:sync-draft -- .drafts/n8n/ledger-change.json
+mise run ledger:smoke:run
+mise run ledger:smoke:inspect
+```
+
+Promote only after user confirmation, because this updates production:
+
+```bash
+mise run ledger:workflow-promote-draft -- .drafts/n8n/ledger-change.json
+```
+
+After promotion, smoke must be regenerated from production, not the draft. `ledger:workflow-promote-draft` does this automatically.
+
 ## Validation
 
-After changing Ledger workflow logic, run from the repo root:
+After changing production Ledger workflow logic, run from the repo root:
 
 ```bash
 mise run ledger:smoke:sync
