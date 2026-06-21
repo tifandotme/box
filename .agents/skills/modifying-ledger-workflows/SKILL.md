@@ -19,6 +19,18 @@ Use this skill for changes to the Ledger n8n workflow and its smoke-test workflo
 - Treat Gmail read-state changes, Actual imports without dry-run, Telegram sends, and production workflow activation or update as production mutations.
 - The smoke workflow must avoid Gmail mark-read actions and Telegram sends.
 - Categories belong in Actual rules, not in the workflow.
+- Merchant payee aliases and payee normalization belong in Actual rules, not in the workflow. n8n may set fixed payee IDs only when transfer semantics or safety require it.
+- n8n should emit the raw merchant name parsed from the receipt. Do not normalize or rename payees inside the workflow.
+
+## Node Style
+
+- Prefer visual nodes (HTML Parse + Edit Fields + Switch) for structurally stable receipt formats.
+- Use a Code node only when parsing is too variable or expressions become unwieldy.
+
+## Notes Conventions
+
+- Put human-useful context (product name, item description) in notes.
+- Do not put transaction IDs, order numbers, or dedupe keys in notes. Use the Gmail message ID as `imported_id`, consistent with all other branches.
 
 ## Backup
 
