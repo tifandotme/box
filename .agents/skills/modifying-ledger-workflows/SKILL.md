@@ -20,6 +20,29 @@ Use this skill for changes to the Ledger n8n workflow and its smoke-test workflo
 - The smoke workflow must avoid Gmail mark-read actions and Telegram sends.
 - Categories belong in Actual rules, not in the workflow.
 
+## Backup
+
+Before implementing any production Ledger workflow change, save a timestamped export from the repo root:
+
+```bash
+mkdir -p .backups/n8n
+n8n-cli workflow get IJraHEgAK54QfTmYhaWD4 --json \
+  > .backups/n8n/ledger-$(date +%Y%m%d-%H%M%S).json
+```
+
+Verify the backup has the expected workflow before updating production:
+
+```bash
+jq '.id, .name, (.nodes | length)' .backups/n8n/ledger-*.json
+```
+
+Restore only after user confirmation, because it updates production:
+
+```bash
+n8n-cli workflow update IJraHEgAK54QfTmYhaWD4 \
+  --file .backups/n8n/ledger-YYYYMMDD-HHMMSS.json
+```
+
 ## Validation
 
 After changing Ledger workflow logic, run from the repo root:
