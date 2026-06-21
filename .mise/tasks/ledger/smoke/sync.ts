@@ -139,7 +139,6 @@ function buildSmokeWorkflow(production: Json, config: Config): Json {
         filters: {
           labelIds: branchLabels,
           q: `label:${config.fixtureLabel}`,
-          readStatus: "read",
         },
         options: {},
       }
